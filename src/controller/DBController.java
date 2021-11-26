@@ -17,7 +17,6 @@ public class DBController {
         ResultSet rset = stmt.executeQuery(
                 String.format("INSERT INTO USER VALUES null,%s,%s,%s,%s,null,0", user.userName(), user.userPassword(), user.userEmail(), date)
         );
-
     }
 
 
