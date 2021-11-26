@@ -15,19 +15,19 @@ public final record User(int userId, String userName, String userPassword, Strin
     public String toString() {
         return String.format("""
                         ________________________________________________
-                        [User_Information______%s
-                        [    username________| %s
-                        [    email___________| %s
-                        [    register_date___| %s
-                        [    last_online_____| %s
-                        [        posts_______| %d
-                        [        followings__| %d
-                        [        followers___| %d
-                        [        interested__| %s
+                        [    User_Information______%s
+                        [        username________| %s
+                        [        email___________| %s
+                        [        register_date___| %s
+                        [        last_online_____| %s
+                        [            posts_______| %d
+                        [            followings__| %d
+                        [            followers___| %d
+                        [            interested__| %s
                         ------------------------------------------------
                         """, online ? "ONLINE" : "OFFLINE", userName, userEmail,
                 regDate, online ? "NOW" : exitDate,
                 postIdList.size(), followingsIdList.size(), followersIdList.size(),
-                DBController.getUserInterest());
+                DBController.getUserInterest(userName));
     }
 }

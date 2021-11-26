@@ -1,12 +1,14 @@
 package controller;
 
 import controller.data.OracleData;
+import model.Post;
 import oracle.jdbc.driver.OracleConnection;
 import oracle.jdbc.driver.OracleDriver;
 import view.NovepusIO;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public final class NovepusController {
@@ -162,6 +164,7 @@ public final class NovepusController {
     }
 
     private void displayAllPosts() {
+        ArrayList<Post> allPosts = new ArrayList<>();
 
     }
 
@@ -176,8 +179,9 @@ public final class NovepusController {
         // TODO: 26/11/2021 search and display
     }
 
-    private void postDetailGuide() {
-
+    private void postDetailGuide(int postId) {
+        Post post = DBController.retrievePostById(postId);
+        io.printPost(post);
     }
 
     public void run() throws SQLException {

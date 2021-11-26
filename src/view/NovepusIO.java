@@ -1,5 +1,10 @@
 package view;
 
+import model.Comment;
+import model.Message;
+import model.Post;
+import model.User;
+
 import java.util.Scanner;
 
 public final class NovepusIO {
@@ -49,6 +54,22 @@ public final class NovepusIO {
         System.out.println("Novepus >>> " + o);
     }
 
+
+    public void printUser(User user){
+        System.out.println(user);
+    }
+
+    public void printPost(Post post){
+        System.out.println(post);
+    }
+
+    public void printComment(Comment comment){
+        System.out.println(comment);
+    }
+
+    public void printMessage(Message message){
+        System.out.println(message);
+    }
 
     public void showMainMenu() {
         System.out.println("""
