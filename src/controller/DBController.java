@@ -13,10 +13,9 @@ public class DBController {
     static OracleConnection conn ;
     public static void createUser(User user) throws SQLException{
         Date date = new Date(new java.util.Date().getTime());
-
         Statement stmt = conn.createStatement();
         ResultSet rset = stmt.executeQuery(
-                String.format("INSERT INTO USER VALUES %s,%s,%s,%s,%s","null",user.userName(),user.userPassword(),user.userEmail())
+                String.format("INSERT INTO USER VALUES %s,%s,%s,%s,%s",,"null",user.userName(),user.userPassword(),user.userEmail(),date.toString(),"null","0")
         );
 
     }
