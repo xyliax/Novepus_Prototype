@@ -9,5 +9,4 @@ public final record User(int userId, String userName, String userPassword, Strin
                          ArrayList<Integer> postIdList,
                          ArrayList<Integer> followingsIdList,
                          ArrayList<Integer> followersIdList) {
-
 }
