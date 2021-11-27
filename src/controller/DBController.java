@@ -25,11 +25,7 @@ public class DBController {
     }
 
     public static void setUserPassword (User user,String newPassword) throws SQLException{
-        String s1= "SELECT * FROM USER WHERE id = "+String.valueOf(user.userId());
-        ResultSet r1 = exc(s1);
-        r1.next();
-
-        String s2 = String.format("update \"user\" set password=\"%s\" where id= %s",newPassword ,r1.getInt(1));
+        String s2 = String.format("update \"user\" set password=\"%s\" where id= %s",newPassword ,user.userId());
         exc(s2);
     }
 
@@ -84,7 +80,7 @@ public class DBController {
                 postId,
                 followingsIdList,
                 followerIdList
-                );
+        );
     }
 
     // about post
@@ -92,7 +88,7 @@ public class DBController {
         return null;
     }
 
-    // ----------------------------
+    // -------------Need to achieve---------------
     public static void addUserInterest(String username, String labelName) {
     }
 
@@ -107,6 +103,8 @@ public class DBController {
     public static ArrayList<String> getUserInterest(String username) {
         return null;
     }
+
+    // --------------For test --------------------------
 
     public static void main(String[] args) {
         try {
