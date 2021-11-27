@@ -119,8 +119,24 @@ public class DBController {
         return null;
     }
 
-    public static ArrayList<String> getUserInterest(String username) {
+    public static ArrayList<String> getUserInterest(int userId) {
+        // TODO: 27/11/2021  
         return null;
+    }
+    
+    public static ArrayList<String> getPostLabel(int postId){
+        // TODO: 27/11/2021  
+        return null;
+    }
+    
+    public static boolean userExist(String username){
+        return false;
+        // TODO: 27/11/2021  
+    }
+    
+    public static boolean postExist(String title){
+        return false;
+        // TODO: 27/11/2021  
     }
 
     // --------------For test --------------------------

@@ -2,6 +2,7 @@ package controller;
 
 import controller.data.OracleData;
 import model.Post;
+import model.User;
 import oracle.jdbc.driver.OracleConnection;
 import oracle.jdbc.driver.OracleDriver;
 import view.NovepusIO;
@@ -152,7 +153,7 @@ public final class NovepusController {
     }
 
     private void manageFollows() {
-
+        //User user = DBController.retrieveUserByName(currentUser);
     }
 
     private void displayUserDetails() {
