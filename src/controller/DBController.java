@@ -297,7 +297,7 @@ public class DBController {
 
     public static ArrayList<Post> searchPostByKey(String keyword) throws SQLException {
         ArrayList<Integer> postIdlist = new ArrayList<>();
-        String s = "SELECT id FROM \"post\" WHERE \"content\" LIKE \'%" + keyword + "%\'";
+        String s = "SELECT id FROM \"post\" WHERE \"content\" LIKE '%" + keyword + "%'";
         ResultSet r = exc(s);
 
         ArrayList<Post> postList = new  ArrayList<>();
