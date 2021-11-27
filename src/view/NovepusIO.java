@@ -5,6 +5,7 @@ import model.Message;
 import model.Post;
 import model.User;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public final class NovepusIO {
@@ -37,6 +38,13 @@ public final class NovepusIO {
         return line;
     }
 
+    public String readOptional() {
+        String string;
+        System.out.println(username + " % ");
+        string = scanner.nextLine();
+        return string;
+    }
+
     public String readText() {
         StringBuilder text = new StringBuilder();
         String line;
@@ -55,20 +63,29 @@ public final class NovepusIO {
     }
 
 
-    public void printUser(User user){
+    public void printUser(User user) {
         System.out.println(user);
     }
 
-    public void printPost(Post post){
+    public void printPost(Post post) {
         System.out.println(post);
     }
 
-    public void printComment(Comment comment){
+    public void printComment(Comment comment) {
         System.out.println(comment);
     }
 
-    public void printMessage(Message message){
+    public void printMessage(Message message) {
         System.out.println(message);
+    }
+
+    public void printUserList(ArrayList<User> userList) {
+        System.out.println("________NAME_____________________EMAIL______________________");
+        for (User user : userList) {
+            System.out.printf("|    %15s    ||%28s|%n",
+                    user.userName(), user.userEmail().isEmpty() ? "NOT SET" : user.userEmail());
+        }
+        System.out.println("------------------------------------------------------------");
     }
 
     public void showMainMenu() {
@@ -93,6 +110,20 @@ public final class NovepusIO {
                                 |    's'     to     Follows   |
                                 |    'm'     to     MailBox   |
                                 |    'q'     to     Log Out   |
+                        -----------------------------------------------%n""",
+                username);
+    }
+
+    public void showFollowMenu(){
+        System.out.printf("""
+                        _______________________________________________
+                                       Social Option [%s]
+                                |    'v'    to    View Recent |
+                                |    'r'    to    Recommends  |
+                                |    's'    to      Search    |
+                                |    'i'    to    User Center |
+                                |    'p'    to       Post     |
+                                |    'q'    to      Go Back   |
                         -----------------------------------------------%n""",
                 username);
     }
