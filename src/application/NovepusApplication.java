@@ -16,9 +16,14 @@ public class NovepusApplication {
         novepusIO.systemPrintln(this + " Finish setting up! ");
     }
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         NovepusApplication session = new NovepusApplication();
-        session.launch();
+        try {
+            session.launch();
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            session.novepusIO.systemPrintln("Connection Broken. Restart Needed.");
+        }
     }
 
     public void launch() throws SQLException {

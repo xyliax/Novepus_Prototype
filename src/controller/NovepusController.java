@@ -35,7 +35,7 @@ public final class NovepusController {
                 case "r" -> registerGuide();
                 case "l" -> {
                     loginGuide();
-                    if (!Objects.equals(getCurrentUser(), GUEST_USER_NAME))
+                    if (!Objects.equals(currentUser, GUEST_USER_NAME))
                         userMenu();
                 }
                 case "w" -> worldForum();
@@ -116,7 +116,7 @@ public final class NovepusController {
 
         do {
             io.systemPrintln("Your email (optional)");
-            email = io.readLine();
+            email = io.readOptional();
             if (email.length() > 25)
                 io.systemPrintln("Email oversize!");
         } while (email.length() > 25);
@@ -159,10 +159,10 @@ public final class NovepusController {
         String content;
         String confirm;
 
-        if (Objects.equals(getCurrentUser(), GUEST_USER_NAME)) {
+        if (Objects.equals(currentUser, GUEST_USER_NAME)) {
             io.systemPrintln("You must Log In before posting");
             loginGuide();
-            if (Objects.equals(getCurrentUser(), GUEST_USER_NAME))
+            if (Objects.equals(currentUser, GUEST_USER_NAME))
                 return;
         }
 
@@ -193,7 +193,18 @@ public final class NovepusController {
         io.systemPrintln(String.format("User '%s' follows %s users and has %d followers!",
                 user.userName(), user.followingsIdList().size(), user.followersIdList().size()));
         String cmd;
-
+        do {
+            io.showFollowMenu();
+            cmd = io.readLine().strip().toLowerCase();
+            switch (cmd) {
+                case "v" -> displayFollowDetails();
+                case "f" -> addFollowing();
+                case "d" -> deleteFollowing();
+                case "p" -> sendMessage();
+                case "q" -> io.systemPrintln("Going Back");
+                default -> io.systemPrintln("Unrecognized Command " + cmd);
+            }
+        } while (!Objects.equals(cmd, "q"));
     }
 
     private void displayFollowDetails() throws SQLException {
@@ -212,12 +223,25 @@ public final class NovepusController {
         io.systemPrintln("Display followers finished!");
     }
 
-    private void displayUserDetails() {
-
+    private void addFollowing() {
+        // TODO: 28/11/2021  
     }
 
-    private void editUserDetails() {
+    private void deleteFollowing() {
+        // TODO: 28/11/2021  
+    }
 
+    private void sendMessage() {
+        // TODO: 28/11/2021  
+    }
+
+    private void displayUserDetails() throws SQLException {
+        User user = DBController.retrieveUserByName(currentUser);
+        io.printUser(user);
+    }
+
+    private void editUserDetails() throws SQLException {
+        displayUserDetails();
     }
 
     private void displayAllPosts() {
@@ -265,14 +289,6 @@ public final class NovepusController {
 
     public OracleConnection getConnection() {
         return connection;
-    }
-
-    public void setConnection(OracleConnection connection) {
-        this.connection = connection;
-    }
-
-    public String getCurrentUser() {
-        return currentUser;
     }
 
     public void setCurrentUser(String currentUser) {

@@ -10,9 +10,11 @@ public final record User(int userId, String userName, String userPassword, Strin
                          ArrayList<Integer> postIdList,
                          ArrayList<Integer> followingsIdList,
                          ArrayList<Integer> followersIdList) {
+
     public User(String userName, String userPassword, String userEmail){
         this(0, userName, userPassword, userEmail, false, null, null, null, null, null, null);
     }
+
     @Override
     public String toString() {
         return String.format("""

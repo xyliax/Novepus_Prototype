@@ -118,11 +118,10 @@ public final class NovepusIO {
         System.out.printf("""
                         _______________________________________________
                                        Social Option [%s]
-                                |    'v'    to    View Recent |
-                                |    'r'    to    Recommends  |
-                                |    's'    to      Search    |
-                                |    'i'    to    User Center |
-                                |    'p'    to       Post     |
+                                |    'v'    to    View Follow |
+                                |    'f'    to      Follow    |
+                                |    'd'    to     Unfollow   |
+                                |    'p'    to    Send Message|
                                 |    'q'    to      Go Back   |
                         -----------------------------------------------%n""",
                 username);
