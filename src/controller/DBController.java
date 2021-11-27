@@ -34,7 +34,7 @@ public class DBController {
 
     public static User retrieveUserByName(String userName) throws SQLException {
         // get user
-        String s1 = String.format("SELECT * FROM %s where username = '%s'", "user", userName);
+        String s1 = String.format("SELECT * FROM %s where \"username\" = '%s'", "user", userName);
         ResultSet r1 = exc(s1);
 
 
@@ -245,6 +245,5 @@ public class DBController {
         } catch (SQLException e) {
             System.out.println("wrong!");
         }
-
     }
 }
