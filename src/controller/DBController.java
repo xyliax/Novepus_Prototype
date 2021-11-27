@@ -23,7 +23,7 @@ public class DBController {
 
     // about user
     public static void createUser(User user) throws SQLException {
-        String s = String.format("INSERT INTO \"user\" VALUES (%d,'%s','%s','%s','%s','%s','%s',%d)", 0, user.userName(), user.userPassword(), user.userEmail(), "haha", curTime(), curTime(), 0);
+        String s = String.format("INSERT INTO \"user\" VALUES (%s,'%s','%s','%s','%s','%s','%s',%s)", 0, user.userName(), user.userPassword(), user.userEmail(), "haha", curTime(), curTime(), 0);
         exc(s);
     }
 
@@ -90,18 +90,19 @@ public class DBController {
         exc(s);
     }
 
-    public static ArrayList<String> getUserInterest (int userId){
-        ArrayList<String> userInterestList = new ArrayList<>();
-        try{
-            String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE \"I.id\" = \"U.interest_id\" AND \"U.user_id\" = %d", userId);
-            ResultSet r = exc(s);
-            while (r.next()) {
-                userInterestList.add(r.getString(1));
-            }
-        }catch(SQLException e){
-            System.out.println("Select failed.");
+    public static ArrayList<String> getUserInterest (int userId) throws SQLException{
+        // get user
+        String s1 = String.format("SELECT * FROM \"user\" WHERE \"userid\" = '%s'", userId);
+        ResultSet r1 = exc(s1);
+        r1.next();
+
+        ArrayList<String> interestString = new ArrayList<>();
+        String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'",  r1.getInt(1));
+        ResultSet r2 = exc(s2);
+        while (r2.next()) {
+            interestString.add(r2.getString(2));
         }
-        return userInterestList;
+        return interestString;
     }
 
     // about post
@@ -132,7 +133,7 @@ public class DBController {
     }
 
     public static User retrieveUserById(int userId) throws SQLException {
-        String s = String.format("SELECT id, username, password, email, isonline, create_time, last_exit_time FROM \"user\" WHERE \"id\" = %s", userId);
+        String s = String.format("SELECT id, username, password, email, isonline, create_time, last_exit_time FROM \"user\" WHERE \"id\" = '%s'", userId);
         ResultSet r = exc(s);
 
         ArrayList<Integer> followingsIdList = null;
