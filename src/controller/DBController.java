@@ -150,7 +150,7 @@ public class DBController {
 
         // get interest id
         ArrayList<Integer> interestIdList = new ArrayList<>();
-        String s2 = String.format("SELECT * FROM \"interest_user\" where \"id\" = %s", postId);
+        String s2 = String.format("SELECT * FROM \"interest_post\" where \"post_id\" = %s", postId);
         ResultSet r2 = exc(s2);
         while (r2.next()) {
             interestIdList.add(r2.getInt(2));
@@ -211,6 +211,7 @@ public class DBController {
     }
 
     public static ArrayList<Integer> getAllPostId(){
+        ArrayList<Integer> idList = new ArrayList<>();
         try {
             String s= "SELECT * FROM \"post\"";
             ResultSet r = exc(s);
