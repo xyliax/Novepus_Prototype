@@ -1,8 +1,6 @@
 package controller;
 
-import com.sun.source.tree.WhileLoopTree;
-import model.Post;
-import model.User;
+import model.*;
 import oracle.jdbc.driver.OracleConnection;
 import oracle.jdbc.driver.OracleDriver;
 import java.sql.*;
@@ -94,10 +92,6 @@ public class DBController {
         return null;
     }
 
-
-
-
-
     // ----------------------------
     public static void addUserInterest(String username, String labelName) {
     }
@@ -113,7 +107,6 @@ public class DBController {
     public static ArrayList<String> getUserInterest(String username) {
         return null;
     }
-
 
     public static void main(String[] args) {
         try {
