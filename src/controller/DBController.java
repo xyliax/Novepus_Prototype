@@ -169,22 +169,31 @@ public class DBController {
         return postList;
     }
 
-    public static ArrayList<String> getUserInterest(int userId){
-        String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE I.id = U.interest_id AND U.user_id = %d", userId);
-        ResultSet r = exc(s);
-        ArrayList<String> userInterestList = null;
-        while (r.next()) {
-            userInterestList.add(r.getString(1));
-        }
-        return userInterestList;
+    public static ArrayList<String> getUserInterest (int userId){
+            ArrayList<String> userInterestList = null;
+            try{
+                String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE I.id = U.interest_id AND U.user_id = %d", userId);
+                ResultSet r = exc(s);
+                while (r.next()) {
+                    userInterestList.add(r.getString(1));
+                }
+            }catch(SQLException e){
+                System.out.println("Select failed.");
+            }
+            return userInterestList;
     }
 
-    public static ArrayList<String> getPostLabel(int postId) throws SQLException {
-        String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_post\" P WHERE I.id = P.interest_id AND P.post_id= %d", postId);
-        ResultSet r = exc(s);
+    public static ArrayList<String> getPostLabel(int postId) {
         ArrayList<String> postLableList = null;
-        while (r.next()) {
-            postLableList.add(r.getString(1));
+        try{
+            String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_post\" P WHERE I.id = P.interest_id AND P.post_id= %d", postId);
+            ResultSet r = exc(s);
+            while (r.next()) {
+                postLableList.add(r.getString(1));
+            }
+        }
+        catch (SQLException e){
+            System.out.println("Select failed.");
         }
         return postLableList;
     }
