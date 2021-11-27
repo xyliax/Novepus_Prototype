@@ -34,7 +34,7 @@ public class DBController {
 
     public static User retrieveUserByName(String userName) throws SQLException {
         // get user
-        String s1 = String.format("SELECT * FROM %s where username = '%s'", "\"user\"", userName);
+        String s1 = String.format("SELECT * FROM %s where username = '%s'", "user", userName);
         ResultSet r1 = exc(s1);
 
 
@@ -196,6 +196,12 @@ public class DBController {
             System.out.println("Select failed.");
         }
         return postLableList;
+    }
+
+    public static void createPost(Post post) throws SQLException {
+        String s1 = String.format("SELECT id FROM \"user\" WHERE username = %s",post.postAuthor());
+        ResultSet r = exc(s1);
+        String s = String.format("INSERT INTO \"post\" VALUES (%d, %d, '%s', '%s', %b, '%s')",post.postId(),r.getInt(1),post.postDate(),post.content(),post.visible(),post.postTitle());
     }
 
     public static boolean userExist(String username) throws SQLException {
