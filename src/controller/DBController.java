@@ -122,6 +122,8 @@ public class DBController {
         return null;
     }
 
+    // -------------Need to achieve---------------
+
     // about post
     public static Post retrievePostById(int postId) throws SQLException {
         //(int postId, String postTitle, String postAuthor, String content,
@@ -139,9 +141,6 @@ public class DBController {
         }
         return new Post(r1.getInt(1), r1.getString(2), r1.getString(3), r1.getString(4), r1.getBoolean(5), r1.getString(6), lableIdList);
     }
-
-    // -------------Need to achieve---------------
-
 
     public static void addUserInterest(String username, String labelName) throws SQLException {
         String s = String.format("SELECT id FROM \"user\" WHERE \"username\" = '%s'", username);
