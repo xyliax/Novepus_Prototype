@@ -53,10 +53,30 @@ public final class NovepusController {
             switch (cmd) {
                 case "i" -> displayUserDetails();
                 case "e" -> editUserDetails();
-                case "p" -> postGuide();
+                case "p" -> postMenu();
                 case "w" -> worldForum();
                 case "s" -> manageFollows();
                 case "m" -> mailBox();
+                case "q" -> {
+                    io.systemPrintln("Logging out...");
+                    DBController.setUserStatus(currentUser, false);
+                    setCurrentUser(GUEST_USER_NAME);
+                }
+                default -> io.systemPrintln("Unrecognized Command " + cmd);
+            }
+        } while (!Objects.equals(cmd, "q"));
+    }
+
+    private void postMenu() throws SQLException {
+        String cmd;
+        do {
+            io.showPostMenu();
+            cmd = io.readLine().strip().toLowerCase();
+            switch (cmd) {
+                case "p" -> postGuide();
+                case "v" -> displayMyPosts();
+                case "w" -> worldForum();
+                case "d" -> deletePost();
                 case "q" -> io.systemPrintln("Going Back");
                 default -> io.systemPrintln("Unrecognized Command " + cmd);
             }
@@ -71,7 +91,7 @@ public final class NovepusController {
             switch (cmd) {
                 case "v" -> displayAllPosts();
                 case "r" -> displayInterestPosts();
-                case "s" -> searchGuide();
+                case "s" -> selectPost();
                 case "i" -> userMenu();
                 case "p" -> postGuide();
                 case "q" -> io.systemPrintln("Going Back");
@@ -89,38 +109,32 @@ public final class NovepusController {
         String password;
         String confirm;
         String email;
-
         do {
             io.systemPrintln("Input your Username ('~' to quit)");
             username = io.readLine();
             if (username.equals("~"))
                 return;
-
             if (DBController.userExist(username))
                 io.systemPrintln(username + " has been taken!");
             if (username.length() > 15)
                 io.systemPrintln("Username oversize!");
         } while (DBController.userExist(username) || username.length() > 15);
-
         do {
             io.systemPrintln("Input your Password");
             password = io.readPassword();
             io.systemPrintln("Confirm your Password (Repeat)");
             confirm = io.readPassword();
-
             if (!Objects.equals(password, confirm))
                 io.systemPrintln("Confirmation Failure!");
             if (password.length() > 15)
                 io.systemPrintln("Password oversize!");
         } while (!Objects.equals(password, confirm) || password.length() > 15);
-
         do {
             io.systemPrintln("Your email (optional)");
             email = io.readOptional();
-            if (email.length() > 25)
+            if (email.length() > 28)
                 io.systemPrintln("Email oversize!");
-        } while (email.length() > 25);
-
+        } while (email.length() > 28);
         DBController.createUser(new User(username, password, email));
         io.systemPrintln(String.format("New User '%s' finished registration at %s",
                 username, new Date()));
@@ -129,27 +143,22 @@ public final class NovepusController {
     private void loginGuide() throws SQLException {
         String username;
         String password;
-
         do {
             do {
                 io.systemPrintln("Input your Username ('~' to quit)");
                 username = io.readLine();
                 if (username.equals("~"))
                     return;
-                if (!DBController.userExist(username)) {
-                    io.systemPrintln(username + " does not exist!");
-                    username = null;
-                }
-            } while (username == null);
-
+                if (!DBController.userExist(username))
+                    io.systemPrintln(String.format("User '%s' does not exist!", username));
+            } while (!DBController.userExist(username));
             io.systemPrintln("Input Password for " + username);
             password = io.readPassword();
-
             if (!DBController.retrieveUserByName(username).userPassword().equals(password))
                 io.systemPrintln("Incorrect Password!");
         } while (!DBController.retrieveUserByName(username).userPassword().equals(password));
-
         setCurrentUser(username);
+        DBController.setUserStatus(currentUser, true);
         io.systemPrintln("Successfully Log In As " + username);
         io.systemPrintln("Welcome!");
     }
@@ -158,31 +167,28 @@ public final class NovepusController {
         String title;
         String content;
         String confirm;
-
         if (Objects.equals(currentUser, GUEST_USER_NAME)) {
             io.systemPrintln("You must Log In before posting");
             loginGuide();
             if (Objects.equals(currentUser, GUEST_USER_NAME))
                 return;
         }
-
         do {
-            io.systemPrintln("Input the title");
+            io.systemPrintln("Input the title ('~' to quit)");
             title = io.readLine();
+            if (title.equals("~"))
+                return;
             if (title.length() > 30)
                 io.systemPrintln("Title oversize!");
         } while (title.length() > 30);
-
         io.systemPrintln("You may input the content now");
         content = io.readText();
-
         io.systemPrintln("'w' to confirm, otherwise quit");
         confirm = io.readLine().strip().toLowerCase();
         if (!confirm.equals("w")) {
             System.out.println("Leaving");
             return;
         }
-
         DBController.createPost(new Post(title, currentUser, content));
         io.systemPrintln(String.format("User '%s' creates a new Post '%s' at %s",
                 currentUser, title, new Date()));
@@ -244,23 +250,102 @@ public final class NovepusController {
         displayUserDetails();
     }
 
-    private void displayAllPosts() {
-        ArrayList<Post> allPosts = new ArrayList<>();
+    private void deletePost() throws SQLException {
+        displayMyPosts();
+        String pids;
+        int pid = 0;
+        do {
+            io.systemPrintln("Input the 'pid' to delete ('~' to quit)");
+            pids = io.readLine();
+            if (pids.equals("~"))
+                return;
+            try {
+                pid = Integer.parseInt(pids);
+            } catch (NumberFormatException numberFormatException) {
+                io.systemPrintln("Invalid pid value!");
+                pid = 0;
+                continue;
+            }
+            if (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted()) {
+                io.systemPrintln(String.format("Post (pid=%s) does not exist! Cannot delete!", pid));
+                continue;
+            }
+            if (!Objects.equals(DBController.retrievePostById(pid).postAuthor(), currentUser))
+                io.systemPrintln(String.format("Post (pid=%s) is not yours! Cannot delete!", pid));
+        } while (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted() ||
+                !Objects.equals(DBController.retrievePostById(pid).postAuthor(), currentUser));
+        DBController.setPostStatus(pid, true);
+        io.systemPrintln(String.format("Successfully delete Post '%s' at %s",
+                DBController.retrievePostById(pid).postTitle(), new Date()));
+    }
 
+    private void displayMyPosts() throws SQLException {
+        User user = DBController.retrieveUserByName(currentUser);
+        ArrayList<Post> userPosts = new ArrayList<>();
+        for (int id : user.postIdList()) {
+            Post post = DBController.retrievePostById(id);
+            if (!post.deleted())
+                userPosts.add(post);
+        }
+        io.systemPrintln(userPosts.size() + " Posts in total!");
+        io.printPostList(userPosts);
+        io.systemPrintln("Display posts finished!");
+    }
+
+    private void displayAllPosts() throws SQLException {
+        ArrayList<Post> allPosts = new ArrayList<>();
+        for(int id:DBController.getAllPostId()){
+            Post post = DBController.retrievePostById(id);
+            if(!post.deleted())
+                allPosts.add(post);
+        }
+        io.systemPrintln(String.format("Displaying all Posts, %d in total!", allPosts.size()));
+        io.printPostList(allPosts);
+        io.systemPrintln("Display posts finished!");
     }
 
     private void displayInterestPosts() {
-
+        // TODO: 28/11/2021
     }
 
-    private void searchGuide() {
-        String title;
-        io.systemPrintln("Search by its title");
-        title = io.readLine();
-        // TODO: 26/11/2021 search and display
+    private void selectPost() throws SQLException {
+        displayAllPosts();
+        String pids;
+        int pid = 0;
+        do {
+            io.systemPrintln("Input the 'pid' ('~' to quit)");
+            pids = io.readLine();
+            if (pids.equals("~"))
+                return;
+            try {
+                pid = Integer.parseInt(pids);
+            } catch (NumberFormatException numberFormatException) {
+                io.systemPrintln("Invalid pid value!");
+                pid = 0;
+                continue;
+            }
+            if (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted())
+                io.systemPrintln(String.format("Post (pid=%s) does not exist! Cannot select!", pid));
+        } while (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted());
+        displayPostDetails(pid);
+        String cmd;
+        do {
+            io.showPostDetailMenu();
+            cmd = io.readLine().strip().toLowerCase();
+            switch (cmd) {
+                case "l" -> {
+                    // TODO: 28/11/2021  
+                }
+                case "c" -> {
+                    // TODO: 28/11/2021  
+                }
+                case "q" -> io.systemPrintln("Going Back");
+                default -> io.systemPrintln("Unrecognized Command " + cmd);
+            }
+        } while (!Objects.equals(cmd, "q"));
     }
 
-    private void postDetailGuide(int postId) throws SQLException {
+    private void displayPostDetails(int postId) throws SQLException {
         Post post = DBController.retrievePostById(postId);
         io.printPost(post);
     }
