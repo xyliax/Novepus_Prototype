@@ -70,8 +70,7 @@ public class DBController {
         while (r5.next()) {
             followerIdList.add(r5.getInt(1));
         }
-
-        r1.next();
+        
         return new User(
                 r1.getInt(1),
                 r1.getString(2),
