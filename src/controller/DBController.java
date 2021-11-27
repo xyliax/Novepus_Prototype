@@ -1,5 +1,7 @@
 package controller;
 
+import model.Comment;
+import model.Message;
 import model.Post;
 import model.User;
 import oracle.jdbc.driver.OracleConnection;
@@ -315,6 +317,27 @@ public class DBController {
         return postList;
     }
 
+    public static void userLikePost(int userName,int postId){}
+
+    public static int getPostLikes(int postId){
+        return 0;
+    }
+
+    public static ArrayList<Integer> getPostCommentId(){
+        return null;
+    }
+
+    public static Comment retrieveCommentById(int comment_id){
+        return null;
+    }
+
+    public static ArrayList<Integer> getUserInbox(User user){
+        return null;
+    }
+
+    public static ArrayList<Integer> getUserSent(User user){
+        return null;
+    }
 
     // --------------For test --------------------------
     public static void main(String[] args) {
