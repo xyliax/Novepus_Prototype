@@ -40,7 +40,7 @@ public class DBController {
 
         // get interest id
         ArrayList<Integer> interestIdList = new ArrayList<>();
-        String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'",  r1.getInt(1));
+        String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = %s",  r1.getInt(1));
         ResultSet r2 = exc(s2);
         while (r2.next()) {
             interestIdList.add(r2.getInt(2));
@@ -48,7 +48,7 @@ public class DBController {
 
         // get post id
         ArrayList<Integer> postIdList = new ArrayList<>();
-        String s3 = String.format("SELECT * FROM \"post\" where \"create_user_id\" = '%s'", r1.getInt(1));
+        String s3 = String.format("SELECT * FROM \"post\" where \"create_user_id\" = %s", r1.getInt(1));
         ResultSet r3 = exc(s3);
         while (r3.next()) {
             postIdList.add(r3.getInt(1));
@@ -56,7 +56,7 @@ public class DBController {
 
         // get following id
         ArrayList<Integer> followingsIdList = new ArrayList<>();
-        String s4 = String.format("SELECT * FROM \"follow_user\" where \"user_id\" = '%s'", r1.getInt(1));
+        String s4 = String.format("SELECT * FROM \"follow_user\" where \"user_id\" = %s", r1.getInt(1));
         ResultSet r4 = exc(s4);
         while (r4.next()) {
             followingsIdList.add(r4.getInt(2));
@@ -64,7 +64,7 @@ public class DBController {
 
         // get follower id
         ArrayList<Integer> followerIdList = new ArrayList<>();
-        String s5 = String.format("SELECT * FROM \"follow_user\" where \"user_befollowed_id\" = '%s'", r1.getInt(1));
+        String s5 = String.format("SELECT * FROM \"follow_user\" where \"user_befollowed_id\" = %s", r1.getInt(1));
         ResultSet r5 = exc(s5);
         while (r5.next()) {
             followerIdList.add(r5.getInt(1));
@@ -87,6 +87,11 @@ public class DBController {
 
     public static void setUserStatus (String username,boolean status) throws SQLException{
         String s = String.format("update \"user\" set \"isonline\" = '%s' where \"username\"= '%s'",status?"1":"0",username);
+        exc(s);
+    }
+
+    public static void setPostStatus (int postId,boolean status) throws SQLException{
+        String s = String.format("update \"post\" set \"isdelete\" = '%s' where \"id\"= %s",status?"1":"0",postId);
         exc(s);
     }
 
@@ -128,25 +133,34 @@ public class DBController {
         ResultSet r = exc(s);
     }
 
+    public static Post retrievePostById(int postId) throws SQLException {
+        // get post
+        String s = String.format("SELECT * FROM \"post\" WHERE \"id\" = %s",postId);
+        ResultSet r = exc(s);
+
+        // get interest id
+        ArrayList<Integer> interestIdList = new ArrayList<>();
+        String s2 = String.format("SELECT * FROM \"interest_user\" where \"post_id\" = %s", postId);
+        ResultSet r2 = exc(s2);
+        while (r2.next()) {
+            interestIdList.add(r2.getInt(2));
+        }
+
+        if (r.next()){
+            return new Post(
+                    r.getInt(1),
+                    r.getString(6),
+                    r.getString(2),
+                    r.getString(4),
+                    r.getBoolean(5),
+                    r.getString(3),
+                    interestIdList);
+        }else return null;
+    }
+
     // -------------Need to achieve---------------
 
     // about post
-    public static Post retrievePostById(int postId) throws SQLException {
-        //(int postId, String postTitle, String postAuthor, String content,
-        //                          boolean visible, String postDate,
-        //                          ArrayList<Integer> labelIdList)
-        String s1 = String.format("SELECT P.id, P.title, U.username, P.content, P.isdelete, P.create_time FROM \"post\" P, \"user\" U WHERE \"P.create_user_id\" = \"U.id\" AND \"P.id\" = %d", postId);
-        ResultSet r1 = exc(s1);
-        ArrayList<Integer> lableIdList = null;
-        String s2 = String.format("SELECT lable_name FROM \"interest\" WHERE \"id\" = %d", postId);
-        ResultSet r2 = exc(s2);
-        int i = 1;
-        while (r2.next()) {
-            lableIdList.add(r2.getInt(i));
-            i++;
-        }
-        return new Post(r1.getInt(1), r1.getString(2), r1.getString(3), r1.getString(4), r1.getBoolean(5), r1.getString(6), lableIdList);
-    }
 
     public static void addUserInterest(String username, String labelName) throws SQLException {
         String s = String.format("SELECT id FROM \"user\" WHERE \"username\" = '%s'", username);
