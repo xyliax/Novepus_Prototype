@@ -38,7 +38,6 @@ public class DBController {
         ResultSet r1 = exc(s1);
         r1.next();
 
-
         // get interest id
         ArrayList<Integer> interestId = new ArrayList<>();
         String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = %s",  r1.getInt(1));
@@ -70,7 +69,7 @@ public class DBController {
         while (r5.next()) {
             followerIdList.add(r5.getInt(1));
         }
-        
+
         return new User(
                 r1.getInt(1),
                 r1.getString(2),
@@ -106,6 +105,10 @@ public class DBController {
 
 
     // -------------Need to achieve---------------
+    public static void setUserStatus(boolean status){
+        
+    }
+
     public static void addUserInterest(String username, String labelName) throws SQLException {
         String s = String.format("SELECT id FROM \"user\" WHERE \"username\" = '%s'", username);
         ResultSet r = exc(s);
@@ -199,7 +202,7 @@ public class DBController {
     public static boolean userExist(String username) throws SQLException {
         String s = String.format("SELECT * FROM \"user\" WHERE \"username\" = '%s'", username);
         ResultSet r = exc(s);
-        return r != null;
+        return r.next();
     }
 
     public static boolean postExist(String title) throws SQLException {
