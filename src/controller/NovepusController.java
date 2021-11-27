@@ -10,6 +10,7 @@ import view.NovepusIO;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 public final class NovepusController {
@@ -25,7 +26,7 @@ public final class NovepusController {
         io.systemPrintln(this + " Initialized");
     }
 
-    private void mainMenu() {
+    private void mainMenu() throws SQLException {
         String cmd;
         do {
             io.showMainMenu();
@@ -44,7 +45,7 @@ public final class NovepusController {
         } while (!Objects.equals(cmd, "q"));
     }
 
-    private void userMenu() {
+    private void userMenu() throws SQLException {
         String cmd;
         do {
             io.showUserMenu();
@@ -62,7 +63,7 @@ public final class NovepusController {
         } while (!Objects.equals(cmd, "q"));
     }
 
-    private void worldForum() {
+    private void worldForum() throws SQLException {
         String cmd;
         do {
             io.showForumMenu();
@@ -80,23 +81,24 @@ public final class NovepusController {
     }
 
     private void mailBox() {
-
+        // TODO: 27/11/2021
     }
 
-    private void registerGuide() {
+    private void registerGuide() throws SQLException {
         String username;
         String password;
         String confirm;
+        String email;
         do {
             io.systemPrintln("Input your Username ('~' to quit)");
             username = io.readLine();
             if (username.equals("~"))
                 return;
-            if (/* TODO: 26/11/2021 exist */false) {
+
+            if (DBController.userExist(username))
                 io.systemPrintln(username + " has been taken!");
-                username = null;
-            }
-        } while (username == null);
+        } while (DBController.userExist(username));
+
         do {
             io.systemPrintln("Input your Password");
             password = io.readPassword();
@@ -105,10 +107,16 @@ public final class NovepusController {
             if (!Objects.equals(password, confirm))
                 io.systemPrintln("Confirmation Failure!");
         } while (!Objects.equals(password, confirm));
-        // TODO: 26/11/2021 finish
+
+        io.systemPrintln("Your email (optional)");
+        email = io.readLine();
+
+        DBController.createUser(new User(username, password, email));
+        io.systemPrintln(String.format("New User '%s' finished registration at %s",
+                username, new Date()));
     }
 
-    private void loginGuide() {
+    private void loginGuide() throws SQLException {
         String username;
         String password;
         do {
@@ -117,19 +125,25 @@ public final class NovepusController {
                 username = io.readLine();
                 if (username.equals("~"))
                     return;
-                if (/* TODO: 26/11/2021 not exist*/false) {
+                if (!DBController.userExist(username)) {
                     io.systemPrintln(username + " does not exist!");
                     username = null;
                 }
             } while (username == null);
-            io.systemPrintln("Password");
+
+            io.systemPrintln("Input Password for " + username);
             password = io.readPassword();
-        } while (/* TODO: 26/11/2021 check*/ false);
+
+            if (!DBController.retrieveUserByName(username).userPassword().equals(password))
+                io.systemPrintln("Incorrect Password!");
+        } while (!DBController.retrieveUserByName(username).userPassword().equals(password));
+
         setCurrentUser(username);
         io.systemPrintln("Successfully Log In As " + username);
+        io.systemPrintln("Welcome!");
     }
 
-    private void postGuide() {
+    private void postGuide() throws SQLException {
         String title;
         String content;
         String confirm;
@@ -139,21 +153,33 @@ public final class NovepusController {
             if (Objects.equals(getCurrentUser(), GUEST_USER_NAME))
                 return;
         }
+
         io.systemPrintln("Input the title");
         title = io.readLine();
         io.systemPrintln("You may input the content now");
         content = io.readText();
+
         io.systemPrintln("'w' to confirm, otherwise quit");
         confirm = io.readLine().strip().toLowerCase();
-        if (!confirm.equals("q")) {
+        if (!confirm.equals("w")) {
             System.out.println("Leaving");
             return;
         }
-        // TODO: 26/11/2021 finish
+
+        DBController.createPost(new Post(title, currentUser, content));
+        io.systemPrintln(String.format("User '%s' creates a new Post '%s' at %s",
+                currentUser, title, new Date()));
     }
 
-    private void manageFollows() {
-        //User user = DBController.retrieveUserByName(currentUser);
+    private void manageFollows() throws SQLException {
+        User user = DBController.retrieveUserByName(currentUser);
+        ArrayList<User> followings = new ArrayList<>();
+        ArrayList<User> followers = new ArrayList<>();
+        for(int id:user.followingsIdList())
+            followings.add(DBController.retrieveUserById(id));
+        for(int id:user.followersIdList())
+            followers.add(DBController.retrieveUserById(id));
+
     }
 
     private void displayUserDetails() {
@@ -194,9 +220,12 @@ public final class NovepusController {
             DriverManager.registerDriver(new OracleDriver());
             connection = (OracleConnection) DriverManager.getConnection(OracleData.URL.getData(),
                     OracleData.USERNAME.getData(), OracleData.PASSWORD.getData());
+            DBController.conn = connection;
+            io.systemPrintln("Successfully connect to Oracle -> " + connection);
         } catch (SQLException sqlException) {
             connection = null;
-            io.systemPrintln("Failure! Cannot connect to Oracle!");
+            io.systemPrintln("System Failure! Cannot connect to Oracle! Exit");
+            System.exit(0);
         }
     }
 

@@ -169,7 +169,7 @@ public class DBController {
 
     public static ArrayList<String> getUserInterest(int userId) {
         //String s = String.format("SELECT LABLE_NAME FROM INTEREST, INTEREST_USER WHERE ID = INTEREST_ID AND USER_ID = %d",userId);
-        // TODO: 27/11/2021  
+        // TODO: 27/11/2021
         return null;
     }
     
@@ -186,8 +186,12 @@ public class DBController {
     }
     
     public static boolean postExist(String title){
-        return false;
+        return true;
         // TODO: 27/11/2021  
+    }
+
+    public static void createPost(Post post){
+
     }
 
     // --------------For test --------------------------
