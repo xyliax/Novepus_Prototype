@@ -86,7 +86,56 @@ public class DBController {
     }
 
     public static User retrieveUserById(int userId) throws SQLException {
-        return null;
+        // get user
+        String s1 = String.format("SELECT * FROM \"user\" WHERE \"id\" = %s", userId);
+        ResultSet r1 = exc(s1);
+        r1.next();
+
+        // get interest id
+        ArrayList<Integer> interestIdList = new ArrayList<>();
+        String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = %s",  r1.getInt(1));
+        ResultSet r2 = exc(s2);
+        while (r2.next()) {
+            interestIdList.add(r2.getInt(2));
+        }
+
+        // get post id
+        ArrayList<Integer> postIdList = new ArrayList<>();
+        String s3 = String.format("SELECT * FROM \"post\" where \"create_user_id\" = %s", r1.getInt(1));
+        ResultSet r3 = exc(s3);
+        while (r3.next()) {
+            postIdList.add(r3.getInt(1));
+        }
+
+        // get following id
+        ArrayList<Integer> followingsIdList = new ArrayList<>();
+        String s4 = String.format("SELECT * FROM \"follow_user\" where \"user_id\" = %s", r1.getInt(1));
+        ResultSet r4 = exc(s4);
+        while (r4.next()) {
+            followingsIdList.add(r4.getInt(2));
+        }
+
+        // get follower id
+        ArrayList<Integer> followerIdList = new ArrayList<>();
+        String s5 = String.format("SELECT * FROM \"follow_user\" where \"user_befollowed_id\" = %s", r1.getInt(1));
+        ResultSet r5 = exc(s5);
+        while (r5.next()) {
+            followerIdList.add(r5.getInt(1));
+        }
+
+        return new User(
+                r1.getInt(1),
+                r1.getString(2),
+                r1.getString(3),
+                r1.getString(4),
+                r1.getBoolean(8),
+                r1.getDate(6).toString(),
+                r1.getDate(7).toString(),
+                interestIdList,
+                postIdList,
+                followingsIdList,
+                followerIdList
+        );
     }
 
     public static void setUserStatus (String username,boolean status) throws SQLException{
@@ -139,7 +188,9 @@ public class DBController {
 
     // about post
     public static void createPost(Post post) throws SQLException {
-        String s = String.format("INSERT INTO \"post\" VALUES (%s, '%s', '%s', '%s', %s, '%s')",0,post.postAuthor(),post.postDate(),post.content(),0,post.postTitle());
+        String s = String.format("INSERT INTO \"post\" VALUES (%s, '%s', '%s', '%s', %s, '%s')",
+                0,retrieveUserByName(post.postAuthor()).userName(),
+                post.postDate(),post.content(),0,post.postTitle());
         ResultSet r = exc(s);
     }
 
@@ -173,14 +224,53 @@ public class DBController {
         return r.next();
     }
 
+    public static ArrayList<Integer> getAllPostId(){
+        ArrayList<Integer> idList = new ArrayList<>();
+
+        try {
+            String s= "SELECT * FROM \"post\"";
+            ResultSet r = exc(s);
+            while (r.next()){
+                idList.add(r.getInt(1));
+            }
+        } catch (SQLException e){
+            System.out.println("error");
+        }
+
+        return idList;
+    }
+
+    public static ArrayList<String> getPostInterest(int postId) {
+        try {
+            ArrayList<Integer> interestId = new ArrayList<>();
+            String s2 = String.format("SELECT * FROM \"interest_post\" where \"post_id\" = '%s'",  postId);
+            ResultSet r2 = exc(s2);
+            while (r2.next()) {
+                interestId.add(r2.getInt(2));
+            }
+            ArrayList<String> interestString = new ArrayList<>();
+            for (Integer integer : interestId) {
+                interestString.add(getLabelById(integer));
+            }
+            return interestString;
+        } catch (SQLException e){
+            System.out.println("ERROR");
+        }
+        return null;
+    }
+
+
     // -------------Need to achieve---------------
 
     // about post
 
-    public static void addUserInterest(String username, String labelName) throws SQLException {
-        String s = String.format("SELECT id FROM \"user\" WHERE \"username\" = '%s'", username);
-        ResultSet r = exc(s);
-        String str = String.format("INSERT INTO \"interest\" VALUES (%d,'%s')", r.getInt(1), labelName);
+    public static void addUserInterest(String username, String labelName) {
+        try {
+            String s = String.format("\"INSERT INTO \"interest_post\" VALUES()");
+
+        }catch (Exception e){
+            System.out.println("Emm......");
+        }
     }
 
     public static ArrayList<Post> searchPostByKey(String keyword) throws SQLException {
@@ -195,31 +285,9 @@ public class DBController {
         return postList;
     }
 
-    public static ArrayList<String> getPostLabel(int postId) {
-        ArrayList<String> postLableList = null;
-        try{
-            String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_post\" P WHERE \"I.id\" = \"P.interest_id\" AND \"P.post_id\"= %d", postId);
-            ResultSet r = exc(s);
-            while (r.next()) {
-                postLableList.add(r.getString(1));
-            }
-        }
-        catch (SQLException e){
-            System.out.println("Select failed.");
-        }
-        return postLableList;
-    }
 
-    public static ArrayList<Integer> getAllPostId(){
-        ArrayList<Integer> idList = new ArrayList<>();
-        try {
-            String s= "SELECT * FROM \"post\"";
-            ResultSet r = exc(s);
-        } catch (SQLException e){
-            System.out.println("error");
-        }
-        return null;
-    }
+
+
 
 
     // --------------For test --------------------------
