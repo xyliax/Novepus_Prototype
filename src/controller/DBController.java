@@ -90,19 +90,24 @@ public class DBController {
         exc(s);
     }
 
-    public static ArrayList<String> getUserInterest (int userId) throws SQLException{
-        // get user
-        String s1 = String.format("SELECT * FROM \"user\" WHERE \"userid\" = '%s'", userId);
-        ResultSet r1 = exc(s1);
-        r1.next();
+    public static ArrayList<String> getUserInterest (int userId) {
+        try {
+            // get user
+            String s1 = String.format("SELECT * FROM \"user\" WHERE \"userid\" = '%s'", userId);
+            ResultSet r1 = exc(s1);
+            r1.next();
 
-        ArrayList<String> interestString = new ArrayList<>();
-        String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'",  r1.getInt(1));
-        ResultSet r2 = exc(s2);
-        while (r2.next()) {
-            interestString.add(r2.getString(2));
+            ArrayList<String> interestString = new ArrayList<>();
+            String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'",  r1.getInt(1));
+            ResultSet r2 = exc(s2);
+            while (r2.next()) {
+                interestString.add(r2.getString(2));
+            }
+            return interestString;
+        } catch (SQLException e){
+            System.out.println("ERROR");
         }
-        return interestString;
+        return null;
     }
 
     // about post
