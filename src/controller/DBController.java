@@ -21,7 +21,7 @@ public class DBController {
 
     // about user
     public static void createUser(User user) throws SQLException {
-        String s = String.format("INSERT INTO USER VALUES 0,%s,%s,%s,%s,null,0", user.userName(), user.userPassword(), user.userEmail(), CurTime());
+        String s = String.format("INSERT INTO \"USER\" VALUES (0,%s,%s,%s,%s,null,0)", user.userName(), user.userPassword(), user.userEmail(), CurTime());
         exc(s);
     }
 
@@ -85,16 +85,33 @@ public class DBController {
     }
 
     // about post
-    public static Post retrievePostById(int postId) {
-        return null;
+    public static Post retrievePostById(int postId) throws SQLException {
+        //(int postId, String postTitle, String postAuthor, String content,
+        //                          boolean visible, String postDate,
+        //                          ArrayList<Integer> labelIdList)
+        String s1 = String.format("SELECT P.ID, P.TITLE, U.USERNAME, P.CONTENT, P.ISDELETE, P.CREATE_TIME FROM POST P, USER U WHERE P.CREATE_USER_ID = U.ID AND P.ID = %d",postId);
+        ResultSet r1 = exc(s1);
+        ArrayList<Integer> lableIdList = null;
+        String s2 = String.format("SELECT LABAL_NAME FROM \"INTEREST\" WHERE ID = %d",postId);
+        ResultSet r2 = exc(s2);
+        int i = 1;
+        while(r2.next()){
+            lableIdList.add(r2.getInt(i));
+            i++;
+        }
+        return new Post(r1.getInt(1),r1.getString(2),r1.getString(3),r1.getString(4),r1.getBoolean(5),r1.getString(6),lableIdList);
     }
 
 
     // -------------Need to achieve---------------
-    public static void addUserInterest(String username, String labelName) {
+    public static void addUserInterest(String username, String labelName) throws SQLException{
+        String s = String.format("SELECT ID FROM \"USER\" WHERE USERNAME = %s",username);
+        ResultSet r = exc(s);
+        String str = String.format("INSERT INTO \"INTEREST\" VALUES (%d,%s)",r.getInt(1),labelName);
     }
 
     public static User retrieveUserById(int userId) {
+
         return null;
     }
 

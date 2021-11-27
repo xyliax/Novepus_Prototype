@@ -179,7 +179,7 @@ public final class NovepusController {
         // TODO: 26/11/2021 search and display
     }
 
-    private void postDetailGuide(int postId) {
+    private void postDetailGuide(int postId) throws SQLException {
         Post post = DBController.retrievePostById(postId);
         io.printPost(post);
     }
