@@ -122,6 +122,12 @@ public class DBController {
         return null;
     }
 
+    // about post
+    public static void createPost(Post post) throws SQLException {
+        String s = String.format("INSERT INTO \"post\" VALUES (%s, '%s', '%s', '%s', %s, '%s')",0,post.postAuthor(),post.postDate(),post.content(),0,post.postTitle());
+        ResultSet r = exc(s);
+    }
+
     // -------------Need to achieve---------------
 
     // about post
@@ -212,11 +218,7 @@ public class DBController {
         return postLableList;
     }
 
-    public static void createPost(Post post) throws SQLException {
-        String s1 = String.format("SELECT id FROM \"user\" WHERE \"username\" = '%s'",post.postAuthor());
-        ResultSet r = exc(s1);
-        String s = String.format("INSERT INTO \"post\" VALUES (%d, %d, '%s', '%s', %b, '%s')",post.postId(),r.getInt(1),post.postDate(),post.content(),post.visible(),post.postTitle());
-    }
+
 
     public static boolean userExist(String username) throws SQLException {
         String s = String.format("SELECT * FROM \"user\" WHERE \"username\" = '%s'", username);
