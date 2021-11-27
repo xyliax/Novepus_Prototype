@@ -85,6 +85,11 @@ public class DBController {
         );
     }
 
+    public static void setUserStatus (String username,boolean status) throws SQLException{
+        String s = String.format("update \"user\" set \"status\" = '%s' where \"username\"= '%s'",status?"1":"0",username);
+        exc(s);
+    }
+
     // about post
     public static Post retrievePostById(int postId) throws SQLException {
         //(int postId, String postTitle, String postAuthor, String content,
@@ -105,10 +110,7 @@ public class DBController {
 
 
     // -------------Need to achieve---------------
-    public static void setUserStatus (String username,boolean status) throws SQLException{
-        String s = String.format("update \"user\" set \"status\" = '%s' where \"username\"= '%s'",status?"1":"0",username);
-        exc(s);
-    }
+
 
     public static void addUserInterest(String username, String labelName) throws SQLException {
         String s = String.format("SELECT id FROM \"user\" WHERE \"username\" = '%s'", username);
