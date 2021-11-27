@@ -39,19 +39,19 @@ public class DBController {
         r1.next();
 
         // get interest id
-        ArrayList<Integer> interestId = new ArrayList<>();
+        ArrayList<Integer> interestIdList = new ArrayList<>();
         String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'",  r1.getInt(1));
         ResultSet r2 = exc(s2);
         while (r2.next()) {
-            interestId.add(r2.getInt(2));
+            interestIdList.add(r2.getInt(2));
         }
 
         // get post id
-        ArrayList<Integer> postId = new ArrayList<>();
+        ArrayList<Integer> postIdList = new ArrayList<>();
         String s3 = String.format("SELECT * FROM \"post\" where \"create_user_id\" = '%s'", r1.getInt(1));
         ResultSet r3 = exc(s3);
         while (r3.next()) {
-            postId.add(r3.getInt(1));
+            postIdList.add(r3.getInt(1));
         }
 
         // get following id
@@ -78,8 +78,8 @@ public class DBController {
                 r1.getBoolean(8),
                 r1.getDate(6).toString(),
                 r1.getDate(7).toString(),
-                interestId,
-                postId,
+                interestIdList,
+                postIdList,
                 followingsIdList,
                 followerIdList
         );
