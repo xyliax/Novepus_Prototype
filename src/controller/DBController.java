@@ -167,6 +167,7 @@ public class DBController {
         return postList;
     }
 
+<<<<<<< HEAD
     public static ArrayList<String> getUserInterest(int userId) throws SQLException {
         String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE I.id = U.interest_id AND U.user_id = %d",userId);
         ResultSet r = exc(s);
@@ -175,6 +176,12 @@ public class DBController {
             userInterestList.add(r.getString(1));
         }
         return userInterestList;
+=======
+    public static ArrayList<String> getUserInterest(int userId) {
+        //String s = String.format("SELECT LABLE_NAME FROM INTEREST, INTEREST_USER WHERE ID = INTEREST_ID AND USER_ID = %d",userId);
+        // TODO: 27/11/2021
+        return null;
+>>>>>>> f2a2136431f102a63b3e9639c3d3bdf1476d159e
     }
     
     public static ArrayList<String> getPostLabel(int postId) throws SQLException {
@@ -193,10 +200,20 @@ public class DBController {
         return r != null;
     }
     
+<<<<<<< HEAD
     public static boolean postExist(String title) throws SQLException {
         String s = String.format("SELECT * FROM \"post\" WHERE title = '%s'",title);
         ResultSet r = exc(s);
         return r!=null;
+=======
+    public static boolean postExist(String title){
+        return true;
+        // TODO: 27/11/2021  
+>>>>>>> f2a2136431f102a63b3e9639c3d3bdf1476d159e
+    }
+
+    public static void createPost(Post post){
+
     }
 
     // --------------For test --------------------------
