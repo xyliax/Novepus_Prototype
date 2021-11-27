@@ -105,6 +105,16 @@ public class DBController {
     public static ArrayList<String> getUserInterest(String username) {
         return null;
     }
+    
+    public static boolean userExist(String username){
+        return false;
+        // TODO: 27/11/2021  
+    }
+    
+    public static boolean postExist(String title){
+        return false;
+        // TODO: 27/11/2021  
+    }
 
     // --------------For test --------------------------
 
