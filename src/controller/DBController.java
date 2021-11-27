@@ -169,7 +169,7 @@ public class DBController {
         return postList;
     }
 
-    public static ArrayList<String> getUserInterest(int userId) throws SQLException {
+    public static ArrayList<String> getUserInterest(int userId){
         String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE I.id = U.interest_id AND U.user_id = %d", userId);
         ResultSet r = exc(s);
         ArrayList<String> userInterestList = null;
