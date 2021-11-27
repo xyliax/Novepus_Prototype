@@ -40,7 +40,7 @@ public class DBController {
 
         // get interest id
         ArrayList<Integer> interestId = new ArrayList<>();
-        String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = %s",  r1.getInt(1));
+        String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'",  r1.getInt(1));
         ResultSet r2 = exc(s2);
         while (r2.next()) {
             interestId.add(r2.getInt(2));
@@ -86,8 +86,22 @@ public class DBController {
     }
 
     public static void setUserStatus (String username,boolean status) throws SQLException{
-        String s = String.format("update \"user\" set \"status\" = '%s' where \"username\"= '%s'",status?"1":"0",username);
+        String s = String.format("update \"user\" set \"isonline\" = '%s' where \"username\"= '%s'",status?"1":"0",username);
         exc(s);
+    }
+
+    public static ArrayList<String> getUserInterest (int userId){
+        ArrayList<String> userInterestList = new ArrayList<>();
+        try{
+            String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE \"I.id\" = \"U.interest_id\" AND \"U.user_id\" = %d", userId);
+            ResultSet r = exc(s);
+            while (r.next()) {
+                userInterestList.add(r.getString(1));
+            }
+        }catch(SQLException e){
+            System.out.println("Select failed.");
+        }
+        return userInterestList;
     }
 
     // about post
@@ -107,7 +121,6 @@ public class DBController {
         }
         return new Post(r1.getInt(1), r1.getString(2), r1.getString(3), r1.getString(4), r1.getBoolean(5), r1.getString(6), lableIdList);
     }
-
 
     // -------------Need to achieve---------------
 
@@ -167,19 +180,7 @@ public class DBController {
         return postList;
     }
 
-    public static ArrayList<String> getUserInterest (int userId){
-            ArrayList<String> userInterestList = new ArrayList<>();
-            try{
-                String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE \"I.id\" = \"U.interest_id\" AND \"U.user_id\" = %d", userId);
-                ResultSet r = exc(s);
-                while (r.next()) {
-                    userInterestList.add(r.getString(1));
-                }
-            }catch(SQLException e){
-                System.out.println("Select failed.");
-            }
-            return userInterestList;
-    }
+
 
     public static ArrayList<String> getPostLabel(int postId) {
         ArrayList<String> postLableList = null;
