@@ -85,6 +85,10 @@ public class DBController {
         );
     }
 
+    public static User retrieveUserById(int userId) throws SQLException {
+        return null;
+    }
+
     public static void setUserStatus (String username,boolean status) throws SQLException{
         String s = String.format("update \"user\" set \"isonline\" = '%s' where \"username\"= '%s'",status?"1":"0",username);
         exc(s);
@@ -133,12 +137,6 @@ public class DBController {
         return r.next();
     }
 
-    public static boolean postExist(int id) throws SQLException {
-        String s = String.format("SELECT * FROM \"post\" WHERE \"id\" = %s", id);
-        ResultSet r = exc(s);
-        return r.next();
-    }
-
     // about post
     public static void createPost(Post post) throws SQLException {
         String s = String.format("INSERT INTO \"post\" VALUES (%s, '%s', '%s', '%s', %s, '%s')",0,post.postAuthor(),post.postDate(),post.content(),0,post.postTitle());
@@ -158,16 +156,21 @@ public class DBController {
             interestIdList.add(r2.getInt(2));
         }
 
-        if (r.next()){
-            return new Post(
-                    r.getInt(1),
-                    r.getString(6),
-                    r.getString(2),
-                    r.getString(4),
-                    r.getBoolean(5),
-                    r.getString(3),
-                    interestIdList);
-        }else return null;
+        r.next();
+        return new Post(
+                r.getInt(1),
+                r.getString(6),
+                r.getString(2),
+                r.getString(4),
+                r.getBoolean(5),
+                r.getString(3),
+                interestIdList);
+    }
+
+    public static boolean postExist(int id) throws SQLException {
+        String s = String.format("SELECT * FROM \"post\" WHERE \"id\" = %s", id);
+        ResultSet r = exc(s);
+        return r.next();
     }
 
     // -------------Need to achieve---------------
@@ -178,43 +181,6 @@ public class DBController {
         String s = String.format("SELECT id FROM \"user\" WHERE \"username\" = '%s'", username);
         ResultSet r = exc(s);
         String str = String.format("INSERT INTO \"interest\" VALUES (%d,'%s')", r.getInt(1), labelName);
-    }
-
-    public static User retrieveUserById(int userId) throws SQLException {
-        String s = String.format("SELECT id, username, password, email, isonline, create_time, last_exit_time FROM \"user\" WHERE \"id\" = '%s'", userId);
-        ResultSet r = exc(s);
-
-        ArrayList<Integer> followingsIdList = null;
-        ArrayList<Integer> followersIdList = null;
-        String s2 = String.format("SELECT user_id FROM \"follow_user\" WHERE \"user_befollowed_id\" = %d", userId);
-        ResultSet r2 = exc(s2);
-        String s3 = String.format("SELECT user_befollowed_id FROM \"follow_user\" WHERE \"user_id = %d\"", userId);
-        ResultSet r3 = exc(s3);
-
-        while (r2.next()) {
-            followingsIdList.add(r2.getInt(1));
-        }
-        while (r3.next()) {
-            followersIdList.add(r3.getInt(1));
-        }
-
-        // get interest id list
-        ArrayList<Integer> interestIdList = null;
-        String s4 = String.format("SELECT interest_id FROM \"interest_user\" WHERE \"user_id\" = %d", userId);
-        ResultSet r4 = exc(s4);
-        while (r4.next()) {
-            interestIdList.add(r4.getInt(1));
-        }
-
-        // get post id list
-        ArrayList<Integer> postIdList = null;
-        String s5 = String.format("SELECT id FROM \"post\" WHERE \"create_user_id\" = %d", userId);
-        ResultSet r5 = exc(s5);
-        while (r5.next()) {
-            postIdList.add(r5.getInt(1));
-        }
-
-        return new User(r.getInt(1), r.getString(2), r.getString(3), r.getString(4), r.getBoolean(5), r.getString(6), r.getString(7), interestIdList, postIdList, followingsIdList, followersIdList);
     }
 
     public static ArrayList<Post> searchPostByKey(String keyword) throws SQLException {
@@ -244,8 +210,9 @@ public class DBController {
         return postLableList;
     }
 
+    public static ArrayList<Integer> getAllPostId(){
 
-
+    }
 
 
     // --------------For test --------------------------
