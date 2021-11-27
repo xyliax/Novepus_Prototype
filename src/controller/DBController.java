@@ -28,8 +28,8 @@ public class DBController {
     }
 
     public static void setUserPassword(User user, String newPassword) throws SQLException {
-        String s2 = String.format("update \"user\" set password=\"%s\" where \"id\"= %s", newPassword, user.userId());
-        exc(s2);
+        String s = String.format("update \"user\" set \"password\" = '%s' where \"username\"= '%s'",newPassword,user.userName());
+        exc(s);
     }
 
     public static User retrieveUserByName(String userName) throws SQLException {
@@ -105,7 +105,9 @@ public class DBController {
 
 
     // -------------Need to achieve---------------
-    public static void setUserStatus(boolean status){
+    public static void setUserStatus (String username,boolean status) throws SQLException{
+        String s = String.format("update \"user\" set \"status\" = '%s' where \"username\"= '%s'",status?"1":"0",username);
+        exc(s);
     }
 
     public static void addUserInterest(String username, String labelName) throws SQLException {
