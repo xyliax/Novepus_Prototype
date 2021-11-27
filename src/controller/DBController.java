@@ -92,19 +92,31 @@ public class DBController {
 
     public static ArrayList<String> getUserInterest (int userId) {
         try {
-            // get user
-            String s1 = String.format("SELECT * FROM \"user\" WHERE \"userid\" = '%s'", userId);
-            ResultSet r1 = exc(s1);
-            r1.next();
-
-            ArrayList<String> interestString = new ArrayList<>();
-            String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'",  r1.getInt(1));
+            ArrayList<Integer> interestId = new ArrayList<>();
+            String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'",  userId);
             ResultSet r2 = exc(s2);
             while (r2.next()) {
-                interestString.add(r2.getString(2));
+                interestId.add(r2.getInt(2));
+            }
+            ArrayList<String> interestString = new ArrayList<>();
+            for (Integer integer : interestId) {
+                interestString.add(getLabelById(integer));
             }
             return interestString;
         } catch (SQLException e){
+            System.out.println("ERROR");
+        }
+        return null;
+    }
+
+    public static String getLabelById (int id){
+        try {
+            String s= String.format("SELECT * FROM \"interest\" where \"id\" = '%s'",id);
+            ResultSet r= exc(s);
+            if (r.next()){
+                return r.getString(2);
+            }
+        }catch (SQLException e){
             System.out.println("ERROR");
         }
         return null;
@@ -185,8 +197,6 @@ public class DBController {
         }
         return postList;
     }
-
-
 
     public static ArrayList<String> getPostLabel(int postId) {
         ArrayList<String> postLableList = null;
