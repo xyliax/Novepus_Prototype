@@ -12,6 +12,7 @@ public class DBController {
     private static ResultSet exc(String s) throws SQLException{
         Statement stmt = conn.createStatement();
         return stmt.executeQuery(s);
+        
     }
 
     private static Date CurTime(){
