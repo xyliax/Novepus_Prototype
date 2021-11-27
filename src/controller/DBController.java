@@ -127,6 +127,18 @@ public class DBController {
         return null;
     }
 
+    public static boolean userExist(String username) throws SQLException {
+        String s = String.format("SELECT * FROM \"user\" WHERE \"username\" = '%s'", username);
+        ResultSet r = exc(s);
+        return r.next();
+    }
+
+    public static boolean postExist(int id) throws SQLException {
+        String s = String.format("SELECT * FROM \"post\" WHERE \"id\" = %s", id);
+        ResultSet r = exc(s);
+        return r.next();
+    }
+
     // about post
     public static void createPost(Post post) throws SQLException {
         String s = String.format("INSERT INTO \"post\" VALUES (%s, '%s', '%s', '%s', %s, '%s')",0,post.postAuthor(),post.postDate(),post.content(),0,post.postTitle());
@@ -234,17 +246,7 @@ public class DBController {
 
 
 
-    public static boolean userExist(String username) throws SQLException {
-        String s = String.format("SELECT * FROM \"user\" WHERE \"username\" = '%s'", username);
-        ResultSet r = exc(s);
-        return r.next();
-    }
 
-    public static boolean postExist(String title) throws SQLException {
-        String s = String.format("SELECT * FROM \"post\" WHERE \"title\" = '%s'", title);
-        ResultSet r = exc(s);
-        return r != null;
-    }
 
     // --------------For test --------------------------
 
