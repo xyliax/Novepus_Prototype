@@ -106,7 +106,6 @@ public class DBController {
 
     // -------------Need to achieve---------------
     public static void setUserStatus(boolean status){
-        
     }
 
     public static void addUserInterest(String username, String labelName) throws SQLException {
@@ -165,7 +164,7 @@ public class DBController {
     }
 
     public static ArrayList<String> getUserInterest (int userId){
-            ArrayList<String> userInterestList = null;
+            ArrayList<String> userInterestList = new ArrayList<>();
             try{
                 String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE \"I.id\" = \"U.interest_id\" AND \"U.user_id\" = %d", userId);
                 ResultSet r = exc(s);
@@ -220,26 +219,5 @@ public class DBController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        System.out.println(curTime());
-        ArrayList<Integer> interests = new ArrayList<>();
-        interests.add(1);
-        interests.add(2);
-        ArrayList<Integer> posts = new ArrayList<>();
-        interests.add(1);
-        interests.add(2);
-        ArrayList<Integer> followings = new ArrayList<>();
-        interests.add(100);
-        interests.add(200);
-        ArrayList<Integer> followers = new ArrayList<>();
-        interests.add(100);
-        interests.add(200);
-
-        try {
-            createUser(new User(0, "haha", "eueu", "2008@", false, curTime().toString(), curTime().toString(), interests, posts, followings, followers));
-        } catch (SQLException e) {
-            System.out.println("wrong!");
-        }
-
     }
 }
