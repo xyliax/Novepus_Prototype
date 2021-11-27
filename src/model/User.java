@@ -28,6 +28,6 @@ public final record User(int userId, String userName, String userPassword, Strin
                         """, online ? "ONLINE" : "OFFLINE", userName, userEmail,
                 regDate, online ? "NOW" : exitDate,
                 postIdList.size(), followingsIdList.size(), followersIdList.size(),
-                DBController.getUserInterest(userName));
+                DBController.getUserInterest(userId));
     }
 }

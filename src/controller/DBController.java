@@ -110,16 +110,65 @@ public class DBController {
         String str = String.format("INSERT INTO \"INTEREST\" VALUES (%d,%s)",r.getInt(1),labelName);
     }
 
-    public static User retrieveUserById(int userId) {
+    public static User retrieveUserById(int userId) throws SQLException {
+/*
+(int userId, String userName, String userPassword, String userEmail,
+                         boolean online, String regDate, String exitDate,
+                         ArrayList<Integer> interestIdList,
+                         ArrayList<Integer> postIdList,
+                         ArrayList<Integer> followingsIdList,
+                         ArrayList<Integer> followersIdList)
+ */
+        String s = String.format("SELECT ID, USERNAME, PASSWORD, EMAIL, ISONLINE, CREATE_TIME, LAST_EXIT_TIME FROM \"USER\" WHERE USERID = %s",userId);
+        ResultSet r = exc(s);
 
-        return null;
+        ArrayList<Integer> followingsIdList = null;
+        ArrayList<Integer> followersIdList = null;
+        String s2 = String.format("SELECT USER_ID FROM FOLLOW_USER WHERE USER_BEFOLLOWED_ID = %d",userId);
+        ResultSet r2 = exc(s2);
+        String s3 = String.format("SELECT USER_BEFOLLOWED_ID FROM FOLLOW_USER WHERE USER_ID  = %d",userId);
+        ResultSet r3 = exc(s3);
+
+        while(r2.next()){
+            followingsIdList.add(r2.getInt(1));
+        }
+        while(r3.next()){
+            followersIdList.add(r3.getInt(1));
+        }
+
+        // get interest id list
+        ArrayList<Integer> interestIdList = null;
+        String s4 = String.format("SELECT INTEREST_ID FROM INTEREST_USER WHERE USER_ID = %d",userId);
+        ResultSet r4 = exc(s4);
+        while(r4.next()){
+            interestIdList.add(r4.getInt(1));
+        }
+
+        // get post id list
+        ArrayList<Integer> postIdList = null;
+        String s5 = String.format("SELECT ID FROM POST WHERE CREATE_USER_ID = %d",userId);
+        ResultSet r5 = exc(s5);
+        while(r5.next()){
+            postIdList.add(r5.getInt(1));
+        }
+
+        return new User(r.getInt(1),r.getString(2),r.getString(3),r.getString(4),r.getBoolean(5),r.getString(6),r.getString(7),interestIdList,postIdList,followingsIdList,followersIdList);
     }
 
-    public static ArrayList<Post> searchPostByKey(String keyword) {
-        return null;
+    public static ArrayList<Post> searchPostByKey(String keyword) throws SQLException {
+        ArrayList<Integer> postIdlist = null;
+        String s = "SELECT ID FROM POST WHERE CONTENT LIKE \'%"+keyword+"%\'";
+        ResultSet r = exc(s);
+
+        ArrayList<Post> postList = null;
+        while(r.next()){
+            postList.add(retrievePostById(r.getInt(1)));
+        }
+        return postList;
     }
 
     public static ArrayList<String> getUserInterest(int userId) {
+        //String s = String.format("SELECT LABLE_NAME FROM INTEREST, INTEREST_USER WHERE ID = INTEREST_ID AND USER_ID = %d",userId);
         // TODO: 27/11/2021  
         return null;
     }
@@ -129,8 +178,10 @@ public class DBController {
         return null;
     }
     
-    public static boolean userExist(String username){
-        return false;
+    public static boolean userExist(String username) throws SQLException {
+        String s = String.format("SELECT * FROM USER WHERE USERNAME = %s",username);
+        ResultSet r = exc(s);
+        return r != null;
         // TODO: 27/11/2021  
     }
     
