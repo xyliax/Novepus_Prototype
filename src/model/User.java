@@ -19,7 +19,7 @@ public final record User(int userId, String userName, String userPassword, Strin
     public String toString() {
         return String.format("""
                         ________________________________________________
-                        [    User_Information______%s %s
+                        [    User_Information______%s  uid=%s
                         [        username________| %s
                         [        email___________| %s
                         [        register_date___| %s

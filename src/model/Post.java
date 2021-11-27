@@ -5,11 +5,11 @@ import controller.DBController;
 import java.util.ArrayList;
 
 public final record Post(int postId, String postTitle, String postAuthor, String content,
-                         boolean visible, String postDate,
+                         boolean deleted, String postDate,
                          ArrayList<Integer> labelIdList) {
 
     public Post(String postTitle, String postAuthor, String content) {
-        this(0, postTitle, postAuthor, content, true, null, null);
+        this(0, postTitle, postAuthor, content, false, null, null);
     }
 
     @Override

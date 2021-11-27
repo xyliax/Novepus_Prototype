@@ -69,6 +69,9 @@ public final class NovepusIO {
 
     public void printPost(Post post) {
         System.out.println(post);
+        System.out.println("Showing Content\n");
+        System.out.println(post.content());
+        System.out.println("-----------------------------------------------Finish");
     }
 
     public void printComment(Comment comment) {
@@ -82,10 +85,19 @@ public final class NovepusIO {
     public void printUserList(ArrayList<User> userList) {
         System.out.println("________NAME_____________________EMAIL______________________");
         for (User user : userList) {
-            System.out.printf("|    %15s    ||%28s|%n",
+            System.out.printf("|    %-15s    ||%-28s|%n",
                     user.userName(), user.userEmail().isEmpty() ? "NOT SET" : user.userEmail());
         }
         System.out.println("------------------------------------------------------------");
+    }
+
+    public void printPostList(ArrayList<Post> postList) {
+        System.out.println("____________________________________________________________________________________________________");
+        for (Post post : postList) {
+            System.out.printf("pid=%-6s Title:%-20s Author:%-15s Size:%-5s  Date:%s%n",
+                    post.postId(), post.postTitle(), post.postAuthor(), post.content().length(), post.postDate());
+        }
+        System.out.println("----------------------------------------------------------------------------------------------------");
     }
 
     public void showMainMenu() {
@@ -105,7 +117,7 @@ public final class NovepusIO {
                                          User Center  [%s]
                                 |    'i'     to    Basic Info |
                                 |    'e'     to      Edit     |
-                                |    'p'     to      Post     |
+                                |    'p'     to   Manage Post |
                                 |    'w'     to      Forum    |
                                 |    's'     to     Follows   |
                                 |    'm'     to     MailBox   |
@@ -114,7 +126,20 @@ public final class NovepusIO {
                 username);
     }
 
-    public void showFollowMenu(){
+    public void showPostMenu() {
+        System.out.printf("""
+                        _______________________________________________
+                                       Post Management  [%s]
+                                |    'p'     to    New Post   |
+                                |    'v'     to  View My Posts|
+                                |    'w'     to      Forum    |
+                                |    'd'     to   Delete Post |
+                                |    'q'     to     Go Back   |
+                        -----------------------------------------------%n""",
+                username);
+    }
+
+    public void showFollowMenu() {
         System.out.printf("""
                         _______________________________________________
                                        Social Option [%s]
@@ -133,7 +158,7 @@ public final class NovepusIO {
                                         World Forum  [%s]
                                 |    'v'    to    View Recent |
                                 |    'r'    to    Recommends  |
-                                |    's'    to      Search    |
+                                |    's'    to      Select    |
                                 |    'i'    to    User Center |
                                 |    'p'    to       Post     |
                                 |    'q'    to      Go Back   |
@@ -141,9 +166,21 @@ public final class NovepusIO {
                 username);
     }
 
+    public void showUserDetailMenu() {
+        System.out.printf("""
+                        _______________________________________________
+                                       Item to Modify  [%s]
+                                |    'p'    to     Password   |
+                                |    'e'    to      Email     |
+                                |    'q'    to     Go Back    |
+                        -----------------------------------------------%n""",
+                username);
+    }
+
     public void showPostDetailMenu() {
         System.out.println("""
                 _______________________________________________
+                               Action on Post
                         |    'l'    to     Like       |
                         |    'c'    to    Comment     |
                         |    'q'    to    Go Back     |
