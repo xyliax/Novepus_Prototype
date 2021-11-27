@@ -167,23 +167,21 @@ public class DBController {
         return null;
     }
 
-    public static String getLabelById (int id){
-        try {
-            String s= String.format("SELECT * FROM \"interest\" where \"id\" = '%s'",id);
-            ResultSet r= exc(s);
-            if (r.next()){
-                return r.getString(2);
-            }
-        }catch (SQLException e){
-            System.out.println("ERROR");
-        }
-        return null;
-    }
-
     public static boolean userExist(String username) throws SQLException {
         String s = String.format("SELECT * FROM \"user\" WHERE \"username\" = '%s'", username);
         ResultSet r = exc(s);
         return r.next();
+    }
+
+    public static void addUserInterest(String username, String labelName) {
+        try {
+            String s = String.format("\"INSERT INTO \"interest_post\" VALUES(%s,'%s')",
+                    retrieveUserByName(username).userId(),
+                    addLabel(labelName));
+            ResultSet r = exc(s);
+        }catch (Exception e){
+            System.out.println("Emm......");
+        }
     }
 
     // about post
@@ -240,7 +238,8 @@ public class DBController {
         return idList;
     }
 
-    public static ArrayList<String> getPostInterest(int postId) {
+    public static ArrayList<String> getPostLabel(int postId) {
+
         try {
             ArrayList<Integer> interestId = new ArrayList<>();
             String s2 = String.format("SELECT * FROM \"interest_post\" where \"post_id\" = '%s'",  postId);
@@ -257,28 +256,51 @@ public class DBController {
             System.out.println("ERROR");
         }
         return null;
+
+
     }
 
+    // about others
+    private static int addLabel(String labelName){
+        try {
+            String s= String.format("SELECT * FROM \"interest\" WHERE \"label_name\" = '%s'",labelName);
+            ResultSet r = exc(s);
+            if(r.next()){
+                return r.getInt(1);
+            }
+
+            String s2 = String.format("INSERT INTO \"interest\" VALUES(%s,'%s')",0,labelName);
+            ResultSet r2 = exc(s2);
+            ResultSet r3 = exc(s);
+            r.next();
+            return r3.getInt(1);
+
+        } catch (SQLException e){
+            System.out.println("ERROR");
+        }return 1;
+    }
+
+    public static String getLabelById (int id){
+        try {
+            String s= String.format("SELECT * FROM \"interest\" where \"id\" = '%s'",id);
+            ResultSet r= exc(s);
+            if (r.next()){
+                return r.getString(2);
+            }
+        }catch (SQLException e){
+            System.out.println("ERROR");
+        }
+        return null;
+    }
 
     // -------------Need to achieve---------------
 
-    // about post
-
-    public static void addUserInterest(String username, String labelName) {
-        try {
-            String s = String.format("\"INSERT INTO \"interest_post\" VALUES()");
-
-        }catch (Exception e){
-            System.out.println("Emm......");
-        }
-    }
-
     public static ArrayList<Post> searchPostByKey(String keyword) throws SQLException {
-        ArrayList<Integer> postIdlist = null;
+        ArrayList<Integer> postIdlist = new ArrayList<>();
         String s = "SELECT id FROM \"post\" WHERE \"content\" LIKE \'%" + keyword + "%\'";
         ResultSet r = exc(s);
 
-        ArrayList<Post> postList = null;
+        ArrayList<Post> postList = new  ArrayList<>();
         while (r.next()) {
             postList.add(retrievePostById(r.getInt(1)));
         }
@@ -287,11 +309,7 @@ public class DBController {
 
 
 
-
-
-
     // --------------For test --------------------------
-
     public static void main(String[] args) {
         try {
             DriverManager.registerDriver(new OracleDriver());
