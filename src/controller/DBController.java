@@ -28,19 +28,20 @@ public class DBController {
     }
 
     public static void setUserPassword(User user, String newPassword) throws SQLException {
-        String s2 = String.format("update \"user\" set password=\"%s\" where id= %s", newPassword, user.userId());
+        String s2 = String.format("update \"user\" set password=\"%s\" where \"id\"= %s", newPassword, user.userId());
         exc(s2);
     }
 
     public static User retrieveUserByName(String userName) throws SQLException {
         // get user
-        String s1 = String.format("SELECT * FROM %s where \"username\" = '%s'", "user", userName);
+        String s1 = String.format("SELECT * FROM \"user\" WHERE \"username\" = '%s'", userName);
         ResultSet r1 = exc(s1);
+        r1.next();
 
 
         // get interest id
         ArrayList<Integer> interestId = new ArrayList<>();
-        String s2 = String.format("SELECT * FROM %s where user_id = %s", "\"interest_user\"", r1.getInt(1));
+        String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = %s",  r1.getInt(1));
         ResultSet r2 = exc(s2);
         while (r2.next()) {
             interestId.add(r2.getInt(2));
@@ -48,7 +49,7 @@ public class DBController {
 
         // get post id
         ArrayList<Integer> postId = new ArrayList<>();
-        String s3 = String.format("SELECT * FROM %s where create_user_id = %s", "\"post\"", r1.getInt(1));
+        String s3 = String.format("SELECT * FROM \"post\" where \"create_user_id\" = %s", r1.getInt(1));
         ResultSet r3 = exc(s3);
         while (r3.next()) {
             postId.add(r3.getInt(1));
@@ -56,7 +57,7 @@ public class DBController {
 
         // get following id
         ArrayList<Integer> followingsIdList = new ArrayList<>();
-        String s4 = String.format("SELECT * FROM %s where user_id = %s", "\"follow_user\"", r1.getInt(1));
+        String s4 = String.format("SELECT * FROM \"follow_user\" where \"user_id\" = %s", r1.getInt(1));
         ResultSet r4 = exc(s4);
         while (r4.next()) {
             followingsIdList.add(r4.getInt(2));
@@ -64,7 +65,7 @@ public class DBController {
 
         // get follower id
         ArrayList<Integer> followerIdList = new ArrayList<>();
-        String s5 = String.format("SELECT * FROM %s where user_befollowed_id = %s", "\"follow_user\"", r1.getInt(1));
+        String s5 = String.format("SELECT * FROM \"follow_user\" where \"user_befollowed_id\" = %s", r1.getInt(1));
         ResultSet r5 = exc(s5);
         while (r5.next()) {
             followerIdList.add(r5.getInt(1));
@@ -91,10 +92,10 @@ public class DBController {
         //(int postId, String postTitle, String postAuthor, String content,
         //                          boolean visible, String postDate,
         //                          ArrayList<Integer> labelIdList)
-        String s1 = String.format("SELECT P.id, P.title, U.username, P.content, P.isdelete, P.create_time FROM \"post\" P, \"user\" U WHERE P.create_user_id = U.id AND P.id = %d", postId);
+        String s1 = String.format("SELECT P.id, P.title, U.username, P.content, P.isdelete, P.create_time FROM \"post\" P, \"user\" U WHERE \"P.create_user_id\" = \"U.id\" AND \"P.id\" = %d", postId);
         ResultSet r1 = exc(s1);
         ArrayList<Integer> lableIdList = null;
-        String s2 = String.format("SELECT lable_name FROM \"interest\" WHERE id = %d", postId);
+        String s2 = String.format("SELECT lable_name FROM \"interest\" WHERE \"id\" = %d", postId);
         ResultSet r2 = exc(s2);
         int i = 1;
         while (r2.next()) {
@@ -107,28 +108,20 @@ public class DBController {
 
     // -------------Need to achieve---------------
     public static void addUserInterest(String username, String labelName) throws SQLException {
-        String s = String.format("SELECT id FROM \"user\" WHERE username = '%s'", username);
+        String s = String.format("SELECT id FROM \"user\" WHERE \"username\" = '%s'", username);
         ResultSet r = exc(s);
         String str = String.format("INSERT INTO \"interest\" VALUES (%d,'%s')", r.getInt(1), labelName);
     }
 
     public static User retrieveUserById(int userId) throws SQLException {
-/*
-(int userId, String userName, String userPassword, String userEmail,
-                         boolean online, String regDate, String exitDate,
-                         ArrayList<Integer> interestIdList,
-                         ArrayList<Integer> postIdList,
-                         ArrayList<Integer> followingsIdList,
-                         ArrayList<Integer> followersIdList)
- */
-        String s = String.format("SELECT id, username, password, email, isonline, create_time, last_exit_time FROM \"user\" WHERE id = %s", userId);
+        String s = String.format("SELECT id, username, password, email, isonline, create_time, last_exit_time FROM \"user\" WHERE \"id\" = %s", userId);
         ResultSet r = exc(s);
 
         ArrayList<Integer> followingsIdList = null;
         ArrayList<Integer> followersIdList = null;
-        String s2 = String.format("SELECT user_id FROM \"follow_user\" WHERE user_befollowed_id = %d", userId);
+        String s2 = String.format("SELECT user_id FROM \"follow_user\" WHERE \"user_befollowed_id\" = %d", userId);
         ResultSet r2 = exc(s2);
-        String s3 = String.format("SELECT user_befollowed_id FROM \"follow_user\" WHERE user_id = %d", userId);
+        String s3 = String.format("SELECT user_befollowed_id FROM \"follow_user\" WHERE \"user_id = %d\"", userId);
         ResultSet r3 = exc(s3);
 
         while (r2.next()) {
@@ -140,7 +133,7 @@ public class DBController {
 
         // get interest id list
         ArrayList<Integer> interestIdList = null;
-        String s4 = String.format("SELECT interest_id FROM \"interest_user\" WHERE user_id = %d", userId);
+        String s4 = String.format("SELECT interest_id FROM \"interest_user\" WHERE \"user_id\" = %d", userId);
         ResultSet r4 = exc(s4);
         while (r4.next()) {
             interestIdList.add(r4.getInt(1));
@@ -148,7 +141,7 @@ public class DBController {
 
         // get post id list
         ArrayList<Integer> postIdList = null;
-        String s5 = String.format("SELECT id FROM \"post\" WHERE create_user_id = %d", userId);
+        String s5 = String.format("SELECT id FROM \"post\" WHERE \"create_user_id\" = %d", userId);
         ResultSet r5 = exc(s5);
         while (r5.next()) {
             postIdList.add(r5.getInt(1));
@@ -159,7 +152,7 @@ public class DBController {
 
     public static ArrayList<Post> searchPostByKey(String keyword) throws SQLException {
         ArrayList<Integer> postIdlist = null;
-        String s = "SELECT id FROM \"post\" WHERE content LIKE \'%" + keyword + "%\'";
+        String s = "SELECT id FROM \"post\" WHERE \"content\" LIKE \'%" + keyword + "%\'";
         ResultSet r = exc(s);
 
         ArrayList<Post> postList = null;
@@ -172,7 +165,7 @@ public class DBController {
     public static ArrayList<String> getUserInterest (int userId){
             ArrayList<String> userInterestList = null;
             try{
-                String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE I.id = U.interest_id AND U.user_id = %d", userId);
+                String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_id\" U WHERE \"I.id\" = \"U.interest_id\" AND \"U.user_id\" = %d", userId);
                 ResultSet r = exc(s);
                 while (r.next()) {
                     userInterestList.add(r.getString(1));
@@ -186,7 +179,7 @@ public class DBController {
     public static ArrayList<String> getPostLabel(int postId) {
         ArrayList<String> postLableList = null;
         try{
-            String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_post\" P WHERE I.id = P.interest_id AND P.post_id= %d", postId);
+            String s = String.format("SELECT I.lable_name FROM \"interest\" I, \"interest_post\" P WHERE \"I.id\" = \"P.interest_id\" AND \"P.post_id\"= %d", postId);
             ResultSet r = exc(s);
             while (r.next()) {
                 postLableList.add(r.getString(1));
@@ -199,19 +192,19 @@ public class DBController {
     }
 
     public static void createPost(Post post) throws SQLException {
-        String s1 = String.format("SELECT id FROM \"user\" WHERE username = %s",post.postAuthor());
+        String s1 = String.format("SELECT id FROM \"user\" WHERE \"username\" = '%s'",post.postAuthor());
         ResultSet r = exc(s1);
         String s = String.format("INSERT INTO \"post\" VALUES (%d, %d, '%s', '%s', %b, '%s')",post.postId(),r.getInt(1),post.postDate(),post.content(),post.visible(),post.postTitle());
     }
 
     public static boolean userExist(String username) throws SQLException {
-        String s = String.format("SELECT * FROM \"user\" WHERE username = '%s'", username);
+        String s = String.format("SELECT * FROM \"user\" WHERE \"username\" = '%s'", username);
         ResultSet r = exc(s);
         return r != null;
     }
 
     public static boolean postExist(String title) throws SQLException {
-        String s = String.format("SELECT * FROM \"post\" WHERE title = '%s'", title);
+        String s = String.format("SELECT * FROM \"post\" WHERE \"title\" = '%s'", title);
         ResultSet r = exc(s);
         return r != null;
     }
@@ -245,5 +238,6 @@ public class DBController {
         } catch (SQLException e) {
             System.out.println("wrong!");
         }
+
     }
 }
