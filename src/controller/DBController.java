@@ -211,7 +211,7 @@ public class DBController {
     }
 
     public static ArrayList<Integer> getAllPostId(){
-
+        return null;
     }
 
 
