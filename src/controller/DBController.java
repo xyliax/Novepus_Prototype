@@ -48,7 +48,7 @@ public class DBController {
 
         // get post id
         ArrayList<Integer> postId = new ArrayList<>();
-        String s3 = String.format("SELECT * FROM \"post\" where \"create_user_id\" = %s", r1.getInt(1));
+        String s3 = String.format("SELECT * FROM \"post\" where \"create_user_id\" = '%s'", r1.getInt(1));
         ResultSet r3 = exc(s3);
         while (r3.next()) {
             postId.add(r3.getInt(1));
@@ -56,7 +56,7 @@ public class DBController {
 
         // get following id
         ArrayList<Integer> followingsIdList = new ArrayList<>();
-        String s4 = String.format("SELECT * FROM \"follow_user\" where \"user_id\" = %s", r1.getInt(1));
+        String s4 = String.format("SELECT * FROM \"follow_user\" where \"user_id\" = '%s'", r1.getInt(1));
         ResultSet r4 = exc(s4);
         while (r4.next()) {
             followingsIdList.add(r4.getInt(2));
@@ -64,7 +64,7 @@ public class DBController {
 
         // get follower id
         ArrayList<Integer> followerIdList = new ArrayList<>();
-        String s5 = String.format("SELECT * FROM \"follow_user\" where \"user_befollowed_id\" = %s", r1.getInt(1));
+        String s5 = String.format("SELECT * FROM \"follow_user\" where \"user_befollowed_id\" = '%s'", r1.getInt(1));
         ResultSet r5 = exc(s5);
         while (r5.next()) {
             followerIdList.add(r5.getInt(1));
