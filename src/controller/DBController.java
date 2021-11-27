@@ -214,6 +214,8 @@ public class DBController {
         try {
             String s= "SELECT * FROM \"post\"";
             ResultSet r = exc(s);
+        } catch (SQLException e){
+            System.out.println("error");
         }
 
 
