@@ -1,6 +1,8 @@
 package controller;
 
+import com.sun.jdi.event.StepEvent;
 import model.Comment;
+import model.Message;
 import model.Post;
 import model.User;
 import oracle.jdbc.driver.OracleConnection;
@@ -155,10 +157,10 @@ public class DBController {
         exc(s);
     }
 
-    public static ArrayList<String> getUserInterest(int userId) {
+    public static ArrayList<String> getUserInterest(String userName) {
         try {
             ArrayList<Integer> interestId = new ArrayList<>();
-            String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'", userId);
+            String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'", retrieveUserByName(userName).userId());
             ResultSet r2 = exc(s2);
             while (r2.next()) {
                 interestId.add(r2.getInt(2));
@@ -290,7 +292,7 @@ public class DBController {
     }
 
     // about comment
-    public static void creatComment(Comment c) {
+    public static void createComment(Comment c) {
         try {
             String s = String.format("INSERT INTO \"post\" VALUES (%s,%s,%s,'%s',%s,'%s')",
                     0, c.postId(), retrieveUserByName(c.creator()).userId(), curTime(), c.content(), 0);
@@ -368,12 +370,18 @@ public class DBController {
         return null;
     }
 
+
+
     // -------------Need to achieve---------------
 
-    public static ArrayList<Integer> getUserInbox(User user) {
+    public static void setUserEmail(String userName, String email){
+
+    }
+
+    public static ArrayList<Integer> getUserInbox(String userName) {
         ArrayList<Integer> MegList = new ArrayList<>();
         try {
-            String s = String.format("SELECT * FROM \"message\" WHERE \"to_user_id\" = %s", user.userId());
+            String s = String.format("SELECT * FROM \"message\" WHERE \"to_user_id\" = %s", retrieveUserByName(userName).userId());
             ResultSet r = exc(s);
             while (r.next()) {
                 MegList.add(r.getInt(1));
@@ -384,10 +392,10 @@ public class DBController {
         return MegList;
     }
 
-    public static ArrayList<Integer> getUserSent(User user) {
+    public static ArrayList<Integer> getUserSent(String userName) {
         ArrayList<Integer> MegList = new ArrayList<>();
         try {
-            String s = String.format("SELECT * FROM \"message\" WHERE \"from_user_id\" = %s", user.userId());
+            String s = String.format("SELECT * FROM \"message\" WHERE \"from_user_id\" = %s", retrieveUserByName(userName).userId());
             ResultSet r = exc(s);
             while (r.next()) {
                 MegList.add(r.getInt(1));
@@ -396,6 +404,30 @@ public class DBController {
             System.out.println("ERROR");
         }
         return MegList;
+    }
+
+    // about message
+    public static void createMessage(Message message){
+
+    }
+
+    public static boolean messageExist(int message_id){
+        return false;
+    }
+
+    public static Message retrieveMessageById(int message_id){
+        return null;
+    }
+
+    public static void setMessageStatus(int message_id,boolean deleted){
+    }
+
+    public static void userFollow(String follower,String followed){}
+
+    public static void userUnfollow(String follower,String followed){}
+
+    public static ArrayList<Integer> getUserInterestPost(String userName){
+        return null;
     }
 
     // --------------For test --------------------------
