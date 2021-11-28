@@ -23,7 +23,7 @@ public final class NovepusIO {
         System.out.println("""
                 ========================================================================
                 []                           N O V E P U S       (OPEN SOURCE)        []
-                []                                                                    []
+                []          https://github.com/pyx-2021/Novepus_Prototype.git         []
                 []   WELCOME TO OUR COMP2411 DATABASE SYSTEM PROJECT SOFTWARE DESIGN  []
                 []               GROUP30 "NOVEPUS" ENTERPRISE COMMUNITY               []
                 []        A BRIEF JAVA IMPLEMENTATION IN COMMAND LINE INTERFACE       []
