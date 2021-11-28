@@ -29,6 +29,10 @@ public final class NovepusController {
     }
 
     private void mainMenu() throws SQLException {
+        if(!Objects.equals(currentUser, GUEST_USER_NAME)) {
+            userMenu();
+            return;
+        }
         String cmd;
         do {
             io.showMainMenu();
@@ -185,14 +189,14 @@ public final class NovepusController {
                 mid = 0;
                 continue;
             }
-            if (!DBController.messageExist(mid) || DBController.retrieveMessageById(mid).deleted()) {
+            if (DBController.messageNotExist(mid) || DBController.retrieveMessageById(mid).deleted()) {
                 io.novepusPrintln(String.format("Message (mid=%s) does not exist! Cannot delete!", mid));
                 continue;
             }
             if (!DBController.getUserInbox(currentUser).contains(mid) &&
                     !DBController.getUserSent(currentUser).contains(mid))
                 io.novepusPrintln(String.format("Message (mid=%s) is not yours! Cannot delete!", mid));
-        } while (!DBController.messageExist(mid) ||
+        } while (DBController.messageNotExist(mid) ||
                 (!DBController.getUserInbox(currentUser).contains(mid) &&
                         !DBController.getUserSent(currentUser).contains(mid)));
         io.printMessage(DBController.retrieveMessageById(mid));
@@ -490,13 +494,13 @@ public final class NovepusController {
                 pid = 0;
                 continue;
             }
-            if (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted()) {
+            if (DBController.postNotExist(pid) || DBController.retrievePostById(pid).deleted()) {
                 io.novepusPrintln(String.format("Post (pid=%s) does not exist! Cannot delete!", pid));
                 continue;
             }
             if (!Objects.equals(DBController.retrievePostById(pid).postAuthor(), currentUser))
                 io.novepusPrintln(String.format("Post (pid=%s) is not yours! Cannot delete!", pid));
-        } while (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted() ||
+        } while (DBController.postNotExist(pid) || DBController.retrievePostById(pid).deleted() ||
                 !Objects.equals(DBController.retrievePostById(pid).postAuthor(), currentUser));
         DBController.setPostStatus(pid, true);
         io.novepusPrintln(String.format("Successfully delete Post '%s' at %s",
@@ -564,9 +568,9 @@ public final class NovepusController {
                 pid = 0;
                 continue;
             }
-            if (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted())
+            if (DBController.postNotExist(pid) || DBController.retrievePostById(pid).deleted())
                 io.novepusPrintln(String.format("Post (pid=%s) does not exist! Cannot select!", pid));
-        } while (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted());
+        } while (DBController.postNotExist(pid) || DBController.retrievePostById(pid).deleted());
         String cmd;
         do {
             displayPostDetails(pid);
