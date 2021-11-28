@@ -23,7 +23,8 @@ public final record Post(int postId, String postTitle, String postAuthor, String
                         [            likes_______| %s
                         [            labels______| %s
                         ------------------------------------------------
-                        """, postId, postTitle, postAuthor, postDate,
+                        """,
+                postId, postTitle, postAuthor, postDate,
                 DBController.getPostLikes(postId),
                 DBController.getPostLabel(postId));
     }

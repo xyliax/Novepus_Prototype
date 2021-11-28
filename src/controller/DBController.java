@@ -510,7 +510,7 @@ public class DBController {
     public static void createMessage(Message message)
             throws SQLException {
         String s = String.format(
-                "INSERT INTO \"message\" VALUES (%s,%s,%s,'%s',%s,'%s')",
+                "INSERT INTO \"message\" VALUES (%s,%s,%s,%s,'%s',%s)",
                 "0", retrieveUserByName(message.sender()).userId(), retrieveUserByName(message.receiver()).userId(),
                 curTime(), message.content(), "0");
         execute(s);
@@ -538,6 +538,7 @@ public class DBController {
                 "SELECT * FROM \"message\" WHERE \"id\"=%s",
                 message_id);
         ResultSet rs = execute(s);
+        rs.next();
         Message message = new Message(
                 rs.getInt(1),
                 retrieveUserById(rs.getInt(2)).userName(),

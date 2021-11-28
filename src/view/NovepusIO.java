@@ -225,7 +225,7 @@ public final class NovepusIO {
     public void printMessageList(ArrayList<Message> messageList) {
         System.out.println("_____________________________________________________________________________________");
         for (Message message : messageList) {
-            System.out.printf("mid=%-6s From %-15s To %-15s At %s%n\tContent: %s",
+            System.out.printf("mid=%-6s From %-15s To %-15s At %s%n\tContent: %s%n",
                     message.messageId(), message.sender(), message.receiver(), message.sentDate(), message.content());
         }
         System.out.println("-------------------------------------------------------------------------------------");
