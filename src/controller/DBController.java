@@ -1,7 +1,6 @@
 package controller;
 
 import model.Comment;
-import model.Message;
 import model.Post;
 import model.User;
 import oracle.jdbc.driver.OracleConnection;
@@ -12,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class DBController {
@@ -138,8 +136,8 @@ public class DBController {
                 r1.getString(3),
                 r1.getString(4),
                 r1.getBoolean(8),
-                r1.getDate(6).toString(),
-                r1.getDate(7).toString(),
+                r1.getString(6),
+                r1.getString(7),
                 interestIdList,
                 postIdList,
                 followingsIdList,
@@ -269,6 +267,53 @@ public class DBController {
 
     }
 
+    public static void userLikePost(String userName, int postId) {
+        try {
+            String s = String.format("INSERT INTO \"like_post\" VALUES(%s,%s)", postId, retrieveUserByName(userName).userId());
+            exc(s);
+        } catch (Exception e) {
+            System.out.println("Emm......");
+        }
+
+    }
+
+    public static int getPostLikes(int postId) {
+        try {
+            String s = String.format("SELECT count(*) FROM \"like_post\" WHERE \"post_id\" = %s", postId);
+            ResultSet r = exc(s);
+            r.next();
+            return r.getInt(1);
+        } catch (SQLException e) {
+            System.out.println("ERROR");
+        }
+        return 0;
+    }
+
+    // about comment
+    public static void creatComment(Comment c) {
+        try {
+            String s = String.format("INSERT INTO \"post\" VALUES (%s,%s,%s,'%s',%s,'%s')",
+                    0, c.postId(), retrieveUserByName(c.creator()).userId(), curTime(), c.content(), 0);
+            ResultSet r = exc(s);
+        } catch (SQLException e) {
+            System.out.println("ERROR");
+        }
+    }
+
+    public static ArrayList<Integer> getPostCommentId(int postId) {
+        ArrayList<Integer> idList = new ArrayList<>();
+        try {
+            String s = String.format("SELECT * FROM \"comment\" WHERE \"post_id\" = %s", postId);
+            ResultSet r = exc(s);
+            while (r.next()) {
+                idList.add(r.getInt(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR");
+        }
+        return idList;
+    }
+
     // about others
     private static int addLabel(String labelName) {
         try {
@@ -303,40 +348,54 @@ public class DBController {
         return null;
     }
 
+    public static Comment retrieveCommentById(int comment_id) {
+        try {
+            String s = String.format("SELECT * FROM \"comment\" where \"id\" = '%s'", comment_id);
+            ResultSet r = exc(s);
+            if (r.next()) {
+                return new Comment(
+                        r.getInt(1),
+                        r.getInt(2),
+                        retrieveUserById(r.getInt(3)).userName(),
+                        r.getString(5),
+                        r.getBoolean(6),
+                        r.getString(4)
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR");
+        }
+        return null;
+    }
+
     // -------------Need to achieve---------------
 
-    public static ArrayList<Post> searchPostByKey(String keyword) throws SQLException {
-        ArrayList<Integer> postIdlist = new ArrayList<>();
-        String s = "SELECT id FROM \"post\" WHERE \"content\" LIKE '%" + keyword + "%'";
-        ResultSet r = exc(s);
-
-        ArrayList<Post> postList = new ArrayList<>();
-        while (r.next()) {
-            postList.add(retrievePostById(r.getInt(1)));
+    public static ArrayList<Integer> getUserInbox(User user) {
+        ArrayList<Integer> MegList = new ArrayList<>();
+        try {
+            String s = String.format("SELECT * FROM \"message\" WHERE \"to_user_id\" = %s", user.userId());
+            ResultSet r = exc(s);
+            while (r.next()) {
+                MegList.add(r.getInt(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR");
         }
-        return postList;
+        return MegList;
     }
 
-    public static void userLikePost(String userName,int postId){}
-
-    public static int getPostLikes(int postId){
-        return 0;
-    }
-
-    public static ArrayList<Integer> getPostCommentId(int postId){
-        return null;
-    }
-
-    public static Comment retrieveCommentById(int comment_id){
-        return null;
-    }
-
-    public static ArrayList<Integer> getUserInbox(User user){
-        return null;
-    }
-
-    public static ArrayList<Integer> getUserSent(User user){
-        return null;
+    public static ArrayList<Integer> getUserSent(User user) {
+        ArrayList<Integer> MegList = new ArrayList<>();
+        try {
+            String s = String.format("SELECT * FROM \"message\" WHERE \"from_user_id\" = %s", user.userId());
+            ResultSet r = exc(s);
+            while (r.next()) {
+                MegList.add(r.getInt(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR");
+        }
+        return MegList;
     }
 
     // --------------For test --------------------------

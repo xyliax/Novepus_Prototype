@@ -1,7 +1,5 @@
 package model;
 
-import java.util.Date;
-
 public final record Comment(int commentId, int postId, String creator, String content,
                             boolean deleted, String createDate) {
 

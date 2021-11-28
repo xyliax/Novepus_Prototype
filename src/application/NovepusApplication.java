@@ -6,14 +6,14 @@ import view.NovepusIO;
 import java.sql.SQLException;
 
 
-public class NovepusApplication {
+public final class NovepusApplication {
     private final NovepusController novepusController;
     private final NovepusIO novepusIO;
 
-    NovepusApplication() {
+    public NovepusApplication() {
         novepusController = new NovepusController();
         novepusIO = novepusController.getIo();
-        novepusIO.systemPrintln(this + " Finish setting up! ");
+        novepusIO.novepusPrintln(this + " Finish setting up! ");
     }
 
     public static void main(String[] args) {
@@ -22,7 +22,9 @@ public class NovepusApplication {
             session.launch();
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
-            session.novepusIO.systemPrintln("Connection Broken. Restart Needed.");
+            session.novepusIO.novepusPrintln("Connection Broken. Restart Needed.");
+            session.novepusIO.novepusPrintln("Connection Broken. Restart Needed.");
+            session.novepusIO.novepusPrintln("Connection Broken. Restart Needed.");
         }
     }
 
