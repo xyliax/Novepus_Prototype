@@ -33,18 +33,20 @@ public class DBController {
     // about user
     public static void createUser(User user) throws SQLException {
         String s = String.format("INSERT INTO \"user\" VALUES (%s,'%s','%s','%s','%s',%s,%s,%s)", 0, user.userName(), user.userPassword(), user.userEmail(), "haha", curTime(), curTime(), 0);
-        exc(s);
+        ResultSet rs = exc(s);
+        rs.close();
     }
 
     public static void setUserPassword(String userName, String newPassword) throws SQLException {
         String s = String.format("update \"user\" set \"password\" = '%s' where \"username\"= '%s'", newPassword, userName);
-        exc(s);
+        ResultSet rs = exc(s);
+        rs.close();
     }
 
     public static void setUserEmail (String userName, String email) throws SQLException{
         String s = String.format("update \"user\" set \"email\" = '%s' where \"username\"= '%s'", email, userName);
-        exc(s);
-
+        ResultSet rs = exc(s);
+        rs.close();
     }
 
     public static User retrieveUserByName(String userName) throws SQLException {
@@ -166,13 +168,15 @@ public class DBController {
     }
 
     public static void setUserStatus(String username, boolean status) throws SQLException {
-        String s = String.format("update \"user\" set \"isonline\" = '%s' where \"username\"= '%s'", status ? "1" : "0", username);
-        exc(s);
+        String s = String.format("update \"user\" set \"isonline\" = %s where \"username\"= '%s'", status ? "1" : "0", username);
+        ResultSet rs = exc(s);
+        rs.close();
     }
 
     public static void setPostStatus(int postId, boolean status) throws SQLException {
-        String s = String.format("update \"post\" set \"isdelete\" = '%s' where \"id\"= %s", status ? "1" : "0", postId);
-        exc(s);
+        String s = String.format("update \"post\" set \"isdelete\" = %s where \"id\"= %s", status ? "1" : "0", postId);
+        ResultSet rs = exc(s);
+        rs.close();
     }
 
     public static ArrayList<String> getUserInterest(String userName) {
@@ -219,7 +223,8 @@ public class DBController {
         String s = String.format("INSERT INTO \"post\" VALUES (%s,%s,%s,'%s',%s,'%s')",
                 0, retrieveUserByName(post.postAuthor()).userId(),
                 curTime(), post.content(), 0, post.postTitle());
-        exc(s);
+        ResultSet rs = exc(s);
+        rs.close();
     }
 
     public static Post retrievePostById(int postId) throws SQLException {
@@ -480,12 +485,28 @@ public class DBController {
         return m;
     }
 
+    public static void setMessageStatus (int message_id,boolean deleted){
+        try {
+            String s = String.format("update \"message\" set \"isdelete\" = %s where \"id\"= '%s';", deleted ? "1" : "0", message_id);
+            ResultSet rs = exc(s);
+            rs.close();
+        }catch (SQLException e){
+            System.out.println("ERROR");
+        }
+
+    }
+
     // -------------Need to achieve---------------
 
-    public static void setMessageStatus(int message_id,boolean deleted){}
-
-    public ArrayList<Integer> getAllUserId(){
-        return null;
+    public ArrayList<Integer> getAllUserId() throws SQLException{
+        ArrayList<Integer> userIdList = new ArrayList<>();
+        String s= "SELECT \"id\" FROM \"user\"";
+        ResultSet r = exc(s);
+        while (r.next()){
+            userIdList.add(r.getInt(1));
+        }
+        r.close();
+        return userIdList;
     }
 
     // adm
