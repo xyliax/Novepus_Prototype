@@ -29,7 +29,7 @@ public final class NovepusController {
     }
 
     private void mainMenu() throws SQLException {
-        if(!Objects.equals(currentUser, GUEST_USER_NAME)) {
+        if (!Objects.equals(currentUser, GUEST_USER_NAME)) {
             userMenu();
             return;
         }
@@ -127,19 +127,19 @@ public final class NovepusController {
 
     private void mailBox() throws SQLException {
         String cmd;
-        ArrayList<Message> inbox = new ArrayList<>();
-        ArrayList<Message> sent = new ArrayList<>();
-        for (int id : DBController.getUserInbox(currentUser)) {
-            Message message = DBController.retrieveMessageById(id);
-            if (!message.deleted())
-                inbox.add(message);
-        }
-        for (int id : DBController.getUserSent(currentUser)) {
-            Message message = DBController.retrieveMessageById(id);
-            if (!message.deleted())
-                sent.add(message);
-        }
         do {
+            ArrayList<Message> inbox = new ArrayList<>();
+            ArrayList<Message> sent = new ArrayList<>();
+            for (int id : DBController.getUserInbox(currentUser)) {
+                Message message = DBController.retrieveMessageById(id);
+                if (!message.deleted())
+                    inbox.add(message);
+            }
+            for (int id : DBController.getUserSent(currentUser)) {
+                Message message = DBController.retrieveMessageById(id);
+                if (!message.deleted())
+                    sent.add(message);
+            }
             io.novepusPrintln("Displaying User Inbox");
             io.printMessageList(inbox);
             io.novepusPrintln("Display User Inbox Finished!");

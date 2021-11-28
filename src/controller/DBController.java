@@ -493,8 +493,11 @@ public class DBController {
                     "SELECT * FROM \"message\" WHERE \"to_user_id\"=%s",
                     retrieveUserByName(userName).userId());
             ResultSet r = execute(s);
-            while (r.next())
-                messageList.add(r.getInt(1));
+            while (r.next()){
+                int mid = r.getInt(1);
+                if(!retrieveMessageById(mid).deleted())
+                    messageList.add(mid);
+            }
             r.close();
         } catch (SQLException e) {
             e.printStackTrace();
