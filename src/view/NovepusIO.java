@@ -43,8 +43,8 @@ public final class NovepusIO {
                                 Online User Number: %d
                         -----------------------------------------------%n""",
                 username,
-                DBController.getOnlineUserNum(),
-                DBController.getUserInbox(username).size());
+                DBController.getUserInbox(username).size(),
+                DBController.getOnlineUserNum());
     }
 
     public void showPostMenu() {
@@ -91,7 +91,7 @@ public final class NovepusIO {
                                 |    'v'    to    View Recent |
                                 |    'r'    to    Recommends  |
                                 |    's'    to      Select    |
-                                |    'i'    to    User Center |
+                                |    'a'    to     All Users  |
                                 |    'p'    to       Post     |
                                 |    'q'    to      Go Back   |
                         -----------------------------------------------%n""",
@@ -104,7 +104,8 @@ public final class NovepusIO {
                                        Item to Modify  [%s]
                                 |    'p'    to     Password   |
                                 |    'e'    to      Email     |
-                                |    'q'    to     Go Back    |
+                                |    'i'    to     Interest   |
+                                |    'q'    to      Go Back   |
                         -----------------------------------------------%n""",
                 username);
     }
@@ -122,7 +123,7 @@ public final class NovepusIO {
     public String readLine() {
         String line;
         do {
-            System.out.print(username + " % ");
+            System.out.print("\t" + username + " % ");
             line = scanner.nextLine();
         } while (line.isBlank());
         return line;
@@ -131,7 +132,7 @@ public final class NovepusIO {
     public String readPassword() {
         String password;
         do {
-            System.out.print(username + " % ");
+            System.out.print("\t" + username + " % ");
             if (System.console() != null)
                 password = String.valueOf(System.console().readPassword());
             else
@@ -161,7 +162,7 @@ public final class NovepusIO {
     }
 
     public void novepusPrintln(Object o) {
-        System.out.println("Novepus >>> " + o);
+        System.out.println("\tNovepus >>> " + o);
     }
 
     public void printUser(User user) {
@@ -205,7 +206,7 @@ public final class NovepusIO {
     public void printPostList(ArrayList<Post> postList) {
         System.out.println("____________________________________________________________________________________________________");
         for (Post post : postList) {
-            System.out.printf("pid=%-6s Title:%-20s Author:%-15s Size:%-5s  Date:%s%n\t\tLikes:%-6s Comments:%-6s",
+            System.out.printf("pid=%-6s Title:%-20s Author:%-15s Size:%-5s  Date:%s%n\t\tLikes:%-6s Comments:%-6s%n",
                     post.postId(), post.postTitle(), post.postAuthor(), post.content().length(), post.postDate(),
                     DBController.getPostLikes(post.postId()), DBController.getPostCommentId(post.postId()).size());
         }

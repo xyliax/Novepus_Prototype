@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 public final record Post(int postId, String postTitle, String postAuthor, String content,
                          boolean deleted, String postDate,
-                         ArrayList<Integer> labelIdList) {
+                         ArrayList<String> labelNameList) {
 
-    public Post(String postTitle, String postAuthor, String content) {
-        this(0, postTitle, postAuthor, content, false, null, null);
+    public Post(String postTitle, String postAuthor, String content, ArrayList<String> labelNameList) {
+        this(0, postTitle, postAuthor, content, false, null, labelNameList);
     }
 
     @Override
