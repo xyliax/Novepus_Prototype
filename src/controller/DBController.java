@@ -232,8 +232,7 @@ public class DBController {
                     retrieveUserByName(userName).userId(),
                     addLabel(labelName));
             execute(s);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -244,8 +243,7 @@ public class DBController {
                     retrieveUserByName(userName).userId(), retrieveUserByName(followedName).userId());
             ResultSet rs = execute(s);
             rs.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -256,8 +254,7 @@ public class DBController {
                     retrieveUserByName(userName).userId(), retrieveUserByName(followedName).userId());
             ResultSet rs = execute(s);
             rs.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -267,8 +264,7 @@ public class DBController {
                     "INSERT INTO \"like_post\" VALUES(%s,%s)",
                     postId, retrieveUserByName(userName).userId());
             execute(s);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -290,8 +286,7 @@ public class DBController {
                     postIdList.add(r.getInt(1));
                 r.close();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return postIdList;
     }
@@ -309,8 +304,7 @@ public class DBController {
                     messageList.add(mid);
             }
             r.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return messageList;
     }
@@ -325,8 +319,7 @@ public class DBController {
             while (r.next())
                 messageList.add(r.getInt(1));
             r.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return messageList;
     }
@@ -340,8 +333,7 @@ public class DBController {
             result = rs.getInt(1);
             rs.close();
             return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return 0;
     }
@@ -431,8 +423,7 @@ public class DBController {
             while (r.next())
                 idList.add(r.getInt(1));
             r.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return idList;
     }
@@ -447,8 +438,7 @@ public class DBController {
             int result = r.getInt(1);
             r.close();
             return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
             return 0;
         }
     }
@@ -467,8 +457,7 @@ public class DBController {
                 interestString.add(getLabelById(integer));
             r2.close();
             return interestString;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
             return null;
         }
     }
@@ -479,8 +468,7 @@ public class DBController {
                     "INSERT INTO \"comment\" VALUES (%s,%s,%s,%s,'%s',%s)",
                     "0", c.postId(), retrieveUserByName(c.creator()).userId(), curTime(), c.content(), "0");
             execute(s);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
     }
 
@@ -494,8 +482,7 @@ public class DBController {
             while (r.next())
                 idList.add(r.getInt(1));
             r.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return idList;
     }
@@ -513,8 +500,7 @@ public class DBController {
                 r.close();
                 return result;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return null;
     }
@@ -537,8 +523,7 @@ public class DBController {
                 r.close();
                 return comment;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return null;
     }
@@ -559,8 +544,7 @@ public class DBController {
                     deleted ? "1" : "0", messageId);
             ResultSet rs = execute(s);
             rs.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
     }
 
@@ -593,8 +577,7 @@ public class DBController {
             result = r.next();
             r.close();
             return !result;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return true;
     }
@@ -622,8 +605,7 @@ public class DBController {
             r2.close();
             r3.close();
             return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
             return -1;
         }
     }
