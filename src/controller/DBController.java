@@ -20,8 +20,8 @@ public class DBController {
 
     private static ResultSet exc(String s) throws SQLException {
         Statement stmt = conn.createStatement();
-        return stmt.executeQuery(s);
-
+        ResultSet r = stmt.executeQuery(s);
+        return r;
     }
 
     private static String curTime() {
@@ -85,7 +85,7 @@ public class DBController {
             followerIdList.add(r5.getInt(1));
         }
 
-        return new User(
+        User u = new User(
                 r1.getInt(1),
                 r1.getString(2),
                 r1.getString(3),
@@ -98,6 +98,12 @@ public class DBController {
                 followingsIdList,
                 followerIdList
         );
+        r1.close();
+        r2.close();
+        r3.close();
+        r4.close();
+        r5.close();
+        return u;
     }
 
     public static User retrieveUserById(int userId) throws SQLException {
@@ -138,7 +144,7 @@ public class DBController {
             followerIdList.add(r5.getInt(1));
         }
 
-        return new User(
+        User u = new User(
                 r1.getInt(1),
                 r1.getString(2),
                 r1.getString(3),
@@ -151,6 +157,12 @@ public class DBController {
                 followingsIdList,
                 followerIdList
         );
+        r1.close();
+        r2.close();
+        r3.close();
+        r4.close();
+        r5.close();
+        return u;
     }
 
     public static void setUserStatus(String username, boolean status) throws SQLException {
@@ -175,6 +187,7 @@ public class DBController {
             for (Integer integer : interestId) {
                 interestString.add(getLabelById(integer));
             }
+            r2.close();
             return interestString;
         } catch (SQLException e) {
             System.out.println("ERROR");
@@ -185,7 +198,9 @@ public class DBController {
     public static boolean userExist(String username) throws SQLException {
         String s = String.format("SELECT * FROM \"user\" WHERE \"username\" = '%s'", username);
         ResultSet r = exc(s);
-        return r.next();
+        boolean b = r.next();
+        r.close();
+        return b;
     }
 
     public static void addUserInterest(String username, String labelName) {
@@ -193,7 +208,7 @@ public class DBController {
             String s = String.format("\"INSERT INTO \"interest_post\" VALUES(%s,'%s')",
                     retrieveUserByName(username).userId(),
                     addLabel(labelName));
-            ResultSet r = exc(s);
+            exc(s);
         } catch (Exception e) {
             System.out.println("Emm......");
         }
@@ -204,7 +219,7 @@ public class DBController {
         String s = String.format("INSERT INTO \"post\" VALUES (%s,%s,%s,'%s',%s,'%s')",
                 0, retrieveUserByName(post.postAuthor()).userId(),
                 curTime(), post.content(), 0, post.postTitle());
-        ResultSet r = exc(s);
+        exc(s);
     }
 
     public static Post retrievePostById(int postId) throws SQLException {
@@ -219,9 +234,8 @@ public class DBController {
         while (r2.next()) {
             interestIdList.add(r2.getInt(2));
         }
-
         r.next();
-        return new Post(
+        Post post = new Post(
                 r.getInt(1),
                 r.getString(6),
                 retrieveUserById(r.getInt(2)).userName(),
@@ -229,12 +243,18 @@ public class DBController {
                 r.getBoolean(5),
                 r.getString(3),
                 interestIdList);
+        r.close();
+        r2.close();
+        return post;
+
     }
 
     public static boolean postExist(int id) throws SQLException {
         String s = String.format("SELECT * FROM \"post\" WHERE \"id\" = %s", id);
         ResultSet r = exc(s);
-        return r.next();
+        boolean b = r.next();
+        r.close();
+        return b;
     }
 
     public static ArrayList<Integer> getAllPostId() {
@@ -246,10 +266,10 @@ public class DBController {
             while (r.next()) {
                 idList.add(r.getInt(1));
             }
+            r.close();
         } catch (SQLException e) {
             System.out.println("error");
         }
-
         return idList;
     }
 
@@ -266,6 +286,7 @@ public class DBController {
             for (Integer integer : interestId) {
                 interestString.add(getLabelById(integer));
             }
+            r2.close();
             return interestString;
         } catch (SQLException e) {
             System.out.println("ERROR");
@@ -290,7 +311,9 @@ public class DBController {
             String s = String.format("SELECT count(*) FROM \"like_post\" WHERE \"post_id\" = %s", postId);
             ResultSet r = exc(s);
             r.next();
-            return r.getInt(1);
+            int result = r.getInt(1);
+            r.close();
+            return result;
         } catch (SQLException e) {
             System.out.println("ERROR");
         }
@@ -302,7 +325,7 @@ public class DBController {
         try {
             String s = String.format("INSERT INTO \"post\" VALUES (%s,%s,%s,'%s',%s,'%s')",
                     0, c.postId(), retrieveUserByName(c.creator()).userId(), curTime(), c.content(), 0);
-            ResultSet r = exc(s);
+            exc(s);
         } catch (SQLException e) {
             System.out.println("ERROR");
         }
@@ -316,6 +339,7 @@ public class DBController {
             while (r.next()) {
                 idList.add(r.getInt(1));
             }
+            r.close();
         } catch (SQLException e) {
             System.out.println("ERROR");
         }
@@ -328,14 +352,19 @@ public class DBController {
             String s = String.format("SELECT * FROM \"interest\" WHERE \"label_name\" = '%s'", labelName);
             ResultSet r = exc(s);
             if (r.next()) {
-                return r.getInt(1);
+                int result = r.getInt(1);
+                r.close();
+                return result;
             }
 
             String s2 = String.format("INSERT INTO \"interest\" VALUES(%s,'%s')", 0, labelName);
             ResultSet r2 = exc(s2);
             ResultSet r3 = exc(s);
-            r.next();
-            return r3.getInt(1);
+            int result = r3.getInt(1);
+            r.close();
+            r2.close();
+            r3.close();
+            return result;
 
         } catch (SQLException e) {
             System.out.println("ERROR");
@@ -348,7 +377,9 @@ public class DBController {
             String s = String.format("SELECT * FROM \"interest\" where \"id\" = '%s'", id);
             ResultSet r = exc(s);
             if (r.next()) {
-                return r.getString(2);
+                String result =  r.getString(2);
+                r.close();
+                return result;
             }
         } catch (SQLException e) {
             System.out.println("ERROR");
@@ -361,7 +392,7 @@ public class DBController {
             String s = String.format("SELECT * FROM \"comment\" where \"id\" = '%s'", comment_id);
             ResultSet r = exc(s);
             if (r.next()) {
-                return new Comment(
+                Comment c = new Comment(
                         r.getInt(1),
                         r.getInt(2),
                         retrieveUserById(r.getInt(3)).userName(),
@@ -369,6 +400,8 @@ public class DBController {
                         r.getBoolean(6),
                         r.getString(4)
                 );
+                r.close();
+                return c;
             }
         } catch (SQLException e) {
             System.out.println("ERROR");
@@ -384,6 +417,7 @@ public class DBController {
             while (r.next()) {
                 MegList.add(r.getInt(1));
             }
+            r.close();
         } catch (SQLException e) {
             System.out.println("ERROR");
         }
@@ -398,6 +432,7 @@ public class DBController {
             while (r.next()) {
                 MegList.add(r.getInt(1));
             }
+            r.close();
         } catch (SQLException e) {
             System.out.println("ERROR");
         }
@@ -405,20 +440,52 @@ public class DBController {
     }
 
     // about message
+    public static void createMessage (Message message) throws SQLException{
+        String s = String.format("INSERT INTO \"message\" VALUES (%s,%s,%s,'%s',%s,'%s')",
+                0,
+                retrieveUserByName(message.sender()).userId(),
+                retrieveUserByName(message.receiver()).userId(),
+                curTime(),
+                message.content(),
+                0);
+        exc(s);
+    }
+    public static boolean messageExist(int message_id){
+        try {
+            String s = String.format("SELECT * FROM \"message\" WHERE \"id\" = %s", message_id);
+            ResultSet r = exc(s);
+            boolean b = r.next();
+            r.close();
+            return b;
+        }catch (SQLException e){
+            System.out.println("ERROR");
+        }
+        return false;
+    }
 
-    public static void createMessage(Message message){
+    public static Message retrieveMessageById (int message_id) throws SQLException{
+        // get post
+        String s = String.format("SELECT * FROM \"message\" WHERE \"id\" = %s", message_id);
+        ResultSet r = exc(s);
 
+        Message m = new Message(
+                r.getInt(1),
+                retrieveUserById(r.getInt(2)).userName(),
+                retrieveUserById(r.getInt(3)).userName(),
+                r.getString(5),
+                r.getBoolean(6),
+                r.getString(4)
+        );
+        r.close();
+        return m;
     }
 
     // -------------Need to achieve---------------
 
-    public static boolean messageExist(int message_id){}
+    public static void setMessageStatus(int message_id,boolean deleted){}
 
-    public static Message retrieveMessageById(int message_id){
+    public ArrayList<Integer> getAllUserId(){
         return null;
-    }
-
-    public static void setMessageStatus(int message_id,boolean deleted){
     }
 
     // adm
@@ -437,8 +504,12 @@ public class DBController {
     // --------------For test --------------------------
     public static void main(String[] args) {
         try {
+            OracleConnection conn;
             DriverManager.registerDriver(new OracleDriver());
             conn = (OracleConnection) DriverManager.getConnection("jdbc:oracle:thin:@studora.comp.polyu.edu.hk:1521:dbms", "20075519d", "viukiyec");
+
+            // -------------------------
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
