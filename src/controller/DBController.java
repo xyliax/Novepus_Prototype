@@ -218,11 +218,36 @@ public class DBController {
         }
     }
 
+    public static void userFollow(String follower,String followed){
+        try {
+            String s = String.format("INSERT INTO \"follow_user\" VALUES (%s,%s)",retrieveUserByName(follower).userId(),retrieveUserByName(followed).userId());
+            ResultSet rs = exc(s);
+            rs.close();
+        }catch (Exception e){
+            System.out.println("Emm......");
+        }
+    }
+
+    public static void userUnfollow(String follower,String followed){
+        try {
+            String s = String.format("DELETE FROM \"follow_user\" WHERE \"user_id\" = %s AND \"user_befollowed_id\" = %s)",retrieveUserByName(follower).userId(),retrieveUserByName(followed).userId());
+            ResultSet rs = exc(s);
+            rs.close();
+        }catch (Exception e){
+            System.out.println("Emm......");
+        }
+    }
+
     // about post
     public static void createPost(Post post) throws SQLException {
         String s = String.format("INSERT INTO \"post\" VALUES (%s,%s,%s,'%s',%s,'%s')",
                 0, retrieveUserByName(post.postAuthor()).userId(),
                 curTime(), post.content(), 0, post.postTitle());
+
+        for (String label:post.labelNameList()){
+            addLabel(label);
+        }
+
         ResultSet rs = exc(s);
         rs.close();
     }
@@ -232,12 +257,13 @@ public class DBController {
         String s = String.format("SELECT * FROM \"post\" WHERE \"id\" = %s", postId);
         ResultSet r = exc(s);
 
+
         // get interest id
-        ArrayList<Integer> interestIdList = new ArrayList<>();
+        ArrayList<String> interestLabelList = new ArrayList<>();
         String s2 = String.format("SELECT * FROM \"interest_post\" where \"post_id\" = %s", postId);
         ResultSet r2 = exc(s2);
         while (r2.next()) {
-            interestIdList.add(r2.getInt(2));
+            interestLabelList.add(getLabelById(r2.getInt(2)));
         }
         r.next();
         Post post = new Post(
@@ -247,7 +273,7 @@ public class DBController {
                 r.getString(4),
                 r.getBoolean(5),
                 r.getString(3),
-                interestIdList);
+                interestLabelList);
         r.close();
         r2.close();
         return post;
@@ -444,6 +470,19 @@ public class DBController {
         return MegList;
     }
 
+    public static int getOnlineUserNum() {
+        try {
+            String s = "SELECT count(*) FROM \"user\" WHERE isonline = 0";
+            ResultSet rs = exc(s);
+            int outcome = rs.getInt(1);
+            rs.close();
+            return outcome;
+        }catch (SQLException e){
+            System.out.println("ERROR");
+        }
+        return 0;
+    }
+
     // about message
     public static void createMessage (Message message) throws SQLException{
         String s = String.format("INSERT INTO \"message\" VALUES (%s,%s,%s,'%s',%s,'%s')",
@@ -455,6 +494,7 @@ public class DBController {
                 0);
         exc(s);
     }
+
     public static boolean messageExist(int message_id){
         try {
             String s = String.format("SELECT * FROM \"message\" WHERE \"id\" = %s", message_id);
@@ -496,8 +536,6 @@ public class DBController {
 
     }
 
-    // -------------Need to achieve---------------
-
     public static ArrayList<Integer> getAllUserId() throws SQLException{
         ArrayList<Integer> userIdList = new ArrayList<>();
         String s= "SELECT \"id\" FROM \"user\"";
@@ -509,16 +547,34 @@ public class DBController {
         return userIdList;
     }
 
+    // -------------Need to achieve---------------
+
     // adm
-    public static int getOnlineUserNum(){
-        return 1;
-    }
-
-    public static void userFollow(String follower,String followed){}
-
-    public static void userUnfollow(String follower,String followed){}
-
     public static ArrayList<Integer> getUserInterestPost(String userName){
+        try {
+            ArrayList<Integer> interestId = new ArrayList<>();
+
+            String s2 = String.format("SELECT * FROM \"interest_user\" where \"user_id\" = '%s'", retrieveUserByName(userName).userId());
+            ResultSet r2 = exc(s2);
+            while (r2.next()) {
+                interestId.add(r2.getInt(2));}
+
+            for (int i:interestId) {
+                String s3 = "SELECT \"post_id\" FROM \"interest_post\" WHERE \"interest_id\" = "+i;
+                ResultSet r = exc(s3);
+                while (r.next()){
+                    interestId.add(r.getInt(1));
+                }
+                r.close();
+            }
+
+            return interestId;
+
+
+        }catch (SQLException e){
+            System.out.println("ERROR");
+        }
+
         return null;
     }
 
