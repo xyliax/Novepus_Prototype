@@ -206,7 +206,7 @@ public final class NovepusIO {
     public void printPostList(ArrayList<Post> postList) {
         System.out.println("____________________________________________________________________________________________________");
         for (Post post : postList) {
-            System.out.printf("pid=%-6s Title:%-20s Author:%-15s Size:%-5s  Date:%s%n\t\tLikes:%-6s Comments:%-6s%n",
+            System.out.printf("pid=%-6s Title:%-20s Author:%-15s Size:%-5s  Date:%s%n\t\tLikes:%-6s Comments:%-6s%n%n",
                     post.postId(), post.postTitle(), post.postAuthor(), post.content().length(), post.postDate(),
                     DBController.getPostLikes(post.postId()), DBController.getPostCommentId(post.postId()).size());
         }

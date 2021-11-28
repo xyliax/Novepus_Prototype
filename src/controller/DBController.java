@@ -237,7 +237,7 @@ public class DBController {
     public static void addUserInterest(String userName, String labelName) {
         try {
             String s = String.format(
-                    "INSERT INTO \"interest_post\" VALUES(%s,'%s')",
+                    "INSERT INTO \"interest_user\" VALUES(%s,%s)",
                     retrieveUserByName(userName).userId(),
                     addLabel(labelName));
             execute(s);
@@ -276,10 +276,19 @@ public class DBController {
                 "INSERT INTO \"post\" VALUES (%s,%s,%s,'%s',%s,'%s')",
                 "0", retrieveUserByName(post.postAuthor()).userId(),
                 curTime(), post.content(), "0", post.postTitle());
-        for (String label : post.labelNameList())
-            addLabel(label);
         ResultSet rs = execute(s);
         rs.close();
+        String q = "SELECT MAX(\"id\") FROM \"post\"";
+        ResultSet qs = execute(q);
+        qs.next();
+        int maxPid = qs.getInt(1);
+        for (String label : post.labelNameList()){
+            String s1 = String.format(
+                    "INSERT INTO \"interest_post\" VALUES(%s,%s)",
+                    maxPid, addLabel(label));
+            ResultSet r1 = execute(s1);
+            r1.close();
+        }
     }
 
     public static Post retrievePostById(int postId)
@@ -366,7 +375,7 @@ public class DBController {
     public static int getPostLikes(int postId) {
         try {
             String s = String.format(
-                    "SELECT count(*) FROM \"like_post\" WHERE \"post_id\"=%s",
+                    "SELECT COUNT(*) FROM \"like_post\" WHERE \"post_id\"=%s",
                     postId);
             ResultSet r = execute(s);
             r.next();
@@ -382,8 +391,8 @@ public class DBController {
     public static void createComment(Comment c) {
         try {
             String s = String.format(
-                    "INSERT INTO \"post\" VALUES (%s,%s,%s,'%s',%s,'%s')",
-                    "0", c.postId(), retrieveUserByName(c.creator()).userId(), curTime(), c.content(), 0);
+                    "INSERT INTO \"comment\" VALUES (%s,%s,%s,%s,'%s',%s)",
+                    "0", c.postId(), retrieveUserByName(c.creator()).userId(), curTime(), c.content(), "0");
             execute(s);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -423,6 +432,7 @@ public class DBController {
                     "0", labelName);
             ResultSet r2 = execute(s2);
             ResultSet r3 = execute(s);
+            r3.next();
             result = r3.getInt(1);
             r.close();
             r2.close();
@@ -591,8 +601,10 @@ public class DBController {
     }
 
     public static ArrayList<Integer> getUserInterestPost(String userName) {
+        ArrayList<Integer> interestIdList = new ArrayList<>();
+        ArrayList<Integer> postIdList = new ArrayList<>();
         try {
-            ArrayList<Integer> interestIdList = new ArrayList<>();
+
             String s2 = String.format(
                     "SELECT * FROM \"interest_user\" WHERE \"user_id\"=%s",
                     retrieveUserByName(userName).userId());
@@ -603,14 +615,13 @@ public class DBController {
                 String s3 = "SELECT \"post_id\" FROM \"interest_post\" WHERE \"interest_id\"=" + id;
                 ResultSet r = execute(s3);
                 while (r.next())
-                    interestIdList.add(r.getInt(1));
+                    postIdList.add(r.getInt(1));
                 r.close();
             }
-            return interestIdList;
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
+        return postIdList;
     }
 
     public static void main(String[] args) {
