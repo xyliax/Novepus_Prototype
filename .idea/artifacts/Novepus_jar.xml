@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Novepus:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Novepus_jar</output-path>
+    <root id="archive" name="Novepus.jar">
+      <element id="module-output" name="Novepus" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ojdbc7.jar" path-in-jar="/" />
+      <element id="library" level="project" name="ojdbc7" />
+    </root>
+  </artifact>
+</component>
