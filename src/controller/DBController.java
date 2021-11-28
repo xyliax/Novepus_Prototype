@@ -412,15 +412,18 @@ public class DBController {
 
     // -------------Need to achieve---------------
 
-    public static boolean messageExist(int message_id){
-        return false;
-    }
+    public static boolean messageExist(int message_id){}
 
     public static Message retrieveMessageById(int message_id){
         return null;
     }
 
     public static void setMessageStatus(int message_id,boolean deleted){
+    }
+
+    // adm
+    public static int getOnlineUserNum(){
+        return 1;
     }
 
     public static void userFollow(String follower,String followed){}
