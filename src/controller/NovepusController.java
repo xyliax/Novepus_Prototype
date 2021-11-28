@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 
+
 public final class NovepusController {
     private static final String GUEST_USER_NAME = "_guest_user_";
     private final NovepusIO io;
@@ -600,6 +601,7 @@ public final class NovepusController {
     }
 
     public void run() throws SQLException {
+        io.showWelcomePage();
         mainMenu();
     }
 

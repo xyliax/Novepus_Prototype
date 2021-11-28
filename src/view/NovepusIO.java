@@ -9,6 +9,7 @@ import model.User;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public final class NovepusIO {
     private final Scanner scanner;
     private String username;
@@ -16,6 +17,24 @@ public final class NovepusIO {
     public NovepusIO() {
         scanner = new Scanner(System.in);
         novepusPrintln(this + " Initialized");
+    }
+
+    public void showWelcomePage() {
+        System.out.println("""
+                ========================================================================
+                []                           N O V E P U S       (OPEN SOURCE)        []
+                []                                                                    []
+                []   WELCOME TO OUR COMP2411 DATABASE SYSTEM PROJECT SOFTWARE DESIGN  []
+                []               GROUP30 "NOVEPUS" ENTERPRISE COMMUNITY               []
+                []        A BRIEF JAVA IMPLEMENTATION IN COMMAND LINE INTERFACE       []
+                []                  PEI Yuxing      20083743D                         []
+                []                  HAN Jiaming     20075519D                         []
+                []                  GENG Longling   20080439D                         []
+                []                  SHU Kunxin      20081657D                         []
+                []                  CHEN Yanyu      20076721D                         []
+                []  COPYRIGHT© 2021-∞ ($@)@POLYU                                      []
+                ========================================================================
+                """);
     }
 
     public void showMainMenu() {
@@ -40,6 +59,7 @@ public final class NovepusIO {
                                 |    's'     to     Follows   |
                                 |    'm'     to     MailBox   | [%d]-inbox
                                 |    'q'     to     Log Out   |
+                                |  <OTHER>   to     REFRESH   |
                                 Online User Number: %d
                         -----------------------------------------------%n""",
                 username,
@@ -80,6 +100,7 @@ public final class NovepusIO {
                                 |    'p'    to    New Message |
                                 |    'd'    to      Delete    |
                                 |    'q'    to     Go Back    |
+                                |  <OTHER>   to     REFRESH   |
                         -----------------------------------------------%n""",
                 username);
     }
@@ -106,6 +127,7 @@ public final class NovepusIO {
                                 |    'e'    to      Email     |
                                 |    'i'    to     Interest   |
                                 |    'q'    to      Go Back   |
+                                |  <OTHER>   to     REFRESH   |
                         -----------------------------------------------%n""",
                 username);
     }
@@ -117,6 +139,7 @@ public final class NovepusIO {
                         |    'l'    to     Like       |
                         |    'c'    to    Comment     |
                         |    'q'    to    Go Back     |
+                        |  <OTHER>   to   REFRESH     |
                 -----------------------------------------------""");
     }
 
