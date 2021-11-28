@@ -614,6 +614,7 @@ public final class NovepusController {
             io.novepusPrintln("Successfully connect to Oracle -> " + connection);
         } catch (SQLException sqlException) {
             connection = null;
+            sqlException.printStackTrace();
             io.novepusPrintln("System Failure! Cannot connect to Oracle! Exit");
             System.exit(0);
         }
