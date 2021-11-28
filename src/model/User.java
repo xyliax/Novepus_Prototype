@@ -25,7 +25,7 @@ public final record User(int userId, String userName, String userPassword, Strin
                         [        email___________| %s
                         [        register_date___| %s
                         [        last_online_____| %s
-                        [            posts_______| %d
+                        [            total_posts_| %d
                         [            followings__| %d
                         [            followers___| %d
                         [            interested__| %s

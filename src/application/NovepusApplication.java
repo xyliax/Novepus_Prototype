@@ -24,7 +24,11 @@ public final class NovepusApplication {
             sqlException.printStackTrace();
             session.novepusIO.novepusPrintln("Connection Broken. Restart Needed.");
             session.novepusIO.novepusPrintln("Connection Broken. Restart Needed.");
-            session.novepusIO.novepusPrintln("Connection Broken. Restart Needed.");
+            try {
+                session.novepusController.getConnection().close();
+            } catch (SQLException ignored) {
+            }
+            session.novepusIO.novepusPrintln("Connection Closed.");
         }
     }
 

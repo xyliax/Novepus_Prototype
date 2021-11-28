@@ -113,7 +113,7 @@ public final class NovepusController {
                 case "v" -> displayAllPosts();
                 case "r" -> displayInterestPosts();
                 case "s" -> selectPost();
-                case "i" -> userMenu();
+                case "a" -> displayAllUsers();
                 case "p" -> postGuide();
                 case "q" -> io.novepusPrintln("Going Back");
                 default -> io.novepusPrintln("Unrecognized Command " + cmd);
@@ -123,19 +123,19 @@ public final class NovepusController {
 
     private void mailBox() throws SQLException {
         String cmd;
+        ArrayList<Message> inbox = new ArrayList<>();
+        ArrayList<Message> sent = new ArrayList<>();
+        for (int id : DBController.getUserInbox(currentUser)) {
+            Message message = DBController.retrieveMessageById(id);
+            if (!message.deleted())
+                inbox.add(message);
+        }
+        for (int id : DBController.getUserSent(currentUser)) {
+            Message message = DBController.retrieveMessageById(id);
+            if (!message.deleted())
+                sent.add(message);
+        }
         do {
-            ArrayList<Message> inbox = new ArrayList<>();
-            ArrayList<Message> sent = new ArrayList<>();
-            for (int id : DBController.getUserInbox(currentUser)) {
-                Message message = DBController.retrieveMessageById(id);
-                if (!message.deleted())
-                    inbox.add(message);
-            }
-            for (int id : DBController.getUserSent(currentUser)) {
-                Message message = DBController.retrieveMessageById(id);
-                if (!message.deleted())
-                    sent.add(message);
-            }
             io.novepusPrintln("Displaying User Inbox");
             io.printMessageList(inbox);
             io.novepusPrintln("Display User Inbox Finished!");
@@ -162,7 +162,7 @@ public final class NovepusController {
             if (receiver.equals("~"))
                 return;
             if (!DBController.userExist(receiver))
-                io.novepusPrintln(String.format("User '%s' does not exist!"));
+                io.novepusPrintln(String.format("User '%s' does not exist!", receiver));
         } while (!DBController.userExist(receiver));
         io.novepusPrintln("You may input your Message content now");
         content = io.readText();
@@ -170,9 +170,9 @@ public final class NovepusController {
         io.novepusPrintln("Sent!");
     }
 
-    private void deleteMessage() {
+    private void deleteMessage() throws SQLException {
         String mids;
-        int mid = 0;
+        int mid;
         do {
             io.novepusPrintln("Input the 'mid' to delete ('~' to quit)");
             mids = io.readLine();
@@ -192,7 +192,7 @@ public final class NovepusController {
             if (!DBController.getUserInbox(currentUser).contains(mid) &&
                     !DBController.getUserSent(currentUser).contains(mid))
                 io.novepusPrintln(String.format("Message (mid=%s) is not yours! Cannot delete!", mid));
-        } while (!DBController.messageExist(pid) ||
+        } while (!DBController.messageExist(mid) ||
                 (!DBController.getUserInbox(currentUser).contains(mid) &&
                         !DBController.getUserSent(currentUser).contains(mid)));
         io.printMessage(DBController.retrieveMessageById(mid));
@@ -293,7 +293,17 @@ public final class NovepusController {
             System.out.println("Leaving");
             return;
         }
-        DBController.createPost(new Post(title, currentUser, content));
+        String label;
+        ArrayList<String> labelList = new ArrayList<>();
+        do {
+            io.novepusPrintln("You may add several label to your Post ('~' to finish)");
+            label = io.readLine();
+            if (!Objects.equals(label, "~")) {
+                labelList.add(label);
+                io.novepusPrintln(String.format("'%s' added!", label));
+            }
+        } while (!Objects.equals(label, "~"));
+        DBController.createPost(new Post(title, currentUser, content, labelList));
         io.novepusPrintln(String.format("User '%s' creates a new Post '%s' at %s",
                 currentUser, title, new Date()));
     }
@@ -312,6 +322,16 @@ public final class NovepusController {
         io.novepusPrintln(followers.size() + " followers in total!");
         io.printUserList(followers);
         io.novepusPrintln("Display followers finished!");
+        String userName;
+        do {
+            io.novepusPrintln("You may input the username to view details ('~' to quit)");
+            userName = io.readLine();
+            if (userName.equals("~"))
+                return;
+            if (!DBController.userExist(userName))
+                io.novepusPrintln(String.format("User '%s' does not exist!", userName));
+        } while (!DBController.userExist(userName));
+        io.printUser(DBController.retrieveUserByName(userName));
     }
 
     private void addFollowing() throws SQLException {
@@ -322,7 +342,7 @@ public final class NovepusController {
             if (userName.equals("~"))
                 return;
             if (!DBController.userExist(userName))
-                io.novepusPrintln(String.format("User '%s' does not exist!"));
+                io.novepusPrintln(String.format("User '%s' does not exist!", userName));
             if (DBController.retrieveUserByName(currentUser).followingsIdList().
                     contains(DBController.retrieveUserByName(userName).userId()))
                 io.novepusPrintln(String.format("You have already followed '%s'!", userName));
@@ -350,7 +370,7 @@ public final class NovepusController {
             if (userName.equals("~"))
                 return;
             if (!DBController.userExist(userName))
-                io.novepusPrintln(String.format("User '%s' does not exist!"));
+                io.novepusPrintln(String.format("User '%s' does not exist!", userName));
             if (!DBController.retrieveUserByName(currentUser).followingsIdList().
                     contains(DBController.retrieveUserByName(userName).userId()))
                 io.novepusPrintln(String.format("You have not followed '%s' yet!", userName));
@@ -369,6 +389,16 @@ public final class NovepusController {
         io.novepusPrintln("Unfollowed");
     }
 
+    private void displayAllUsers() throws SQLException {
+        ArrayList<User> allUsers = new ArrayList<>();
+        for (int id : DBController.getAllUserId()) {
+            User user = DBController.retrieveUserById(id);
+            allUsers.add(user);
+        }
+        io.novepusPrintln(String.format("Displaying all Users, %d in total!", allUsers.size()));
+        io.printUserList(allUsers);
+        io.novepusPrintln("Display all Users finished!");
+    }
 
     private void displayUserDetails() throws SQLException {
         User user = DBController.retrieveUserByName(currentUser);
@@ -384,6 +414,7 @@ public final class NovepusController {
             switch (cmd) {
                 case "p" -> resetUserPassword();
                 case "e" -> resetUserEmail();
+                case "i" -> addUserInterest();
                 case "q" -> io.novepusPrintln("Going Back");
                 default -> io.novepusPrintln("Unrecognized Command " + cmd);
             }
@@ -416,7 +447,7 @@ public final class NovepusController {
 
     }
 
-    private void resetUserEmail() {
+    private void resetUserEmail() throws SQLException {
         String newEmail;
         do {
             io.novepusPrintln("Your new email");
@@ -430,10 +461,23 @@ public final class NovepusController {
 
     }
 
+    private void addUserInterest() throws SQLException {
+        String interest;
+        do {
+            io.novepusPrintln("Input the interest word ('~' to quit)");
+            interest = io.readLine();
+            if (!Objects.equals(interest, "~")) {
+                DBController.addUserInterest(currentUser, interest);
+                io.novepusPrintln(String.format("'%s' added!", interest));
+            }
+        } while (!Objects.equals(interest, "~"));
+        io.printUser(DBController.retrieveUserByName(currentUser));
+    }
+
     private void deletePost() throws SQLException {
         displayMyPosts();
         String pids;
-        int pid = 0;
+        int pid;
         do {
             io.novepusPrintln("Input the 'pid' to delete ('~' to quit)");
             pids = io.readLine();
@@ -486,7 +530,7 @@ public final class NovepusController {
 
     private void displayInterestPosts() throws SQLException {
         io.novepusPrintln("You are interested in " +
-                DBController.getUserInterest(currentUser);
+                DBController.getUserInterest(currentUser));
         ArrayList<Post> posts = new ArrayList<>();
         for (int id : DBController.getUserInterestPost(currentUser)) {
             Post post = DBController.retrievePostById(id);
@@ -501,7 +545,13 @@ public final class NovepusController {
     private void selectPost() throws SQLException {
         displayAllPosts();
         String pids;
-        int pid = 0;
+        int pid;
+        if (Objects.equals(currentUser, GUEST_USER_NAME)) {
+            io.novepusPrintln("You must Log In first!");
+            loginGuide();
+            if (Objects.equals(currentUser, GUEST_USER_NAME))
+                return;
+        }
         do {
             io.novepusPrintln("Input the 'pid' ('~' to quit)");
             pids = io.readLine();
@@ -517,9 +567,9 @@ public final class NovepusController {
             if (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted())
                 io.novepusPrintln(String.format("Post (pid=%s) does not exist! Cannot select!", pid));
         } while (!DBController.postExist(pid) || DBController.retrievePostById(pid).deleted());
-        displayPostDetails(pid);
         String cmd;
         do {
+            displayPostDetails(pid);
             io.showPostDetailMenu();
             cmd = io.readLine().strip().toLowerCase();
             switch (cmd) {
