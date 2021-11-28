@@ -2,6 +2,10 @@ package model;
 
 import java.util.Date;
 
-public final record Comment(int commentId, String creator, String content,
-                            boolean visible, String createDate) {
+public final record Comment(int commentId, int postId, String creator, String content,
+                            boolean deleted, String createDate) {
+
+    public Comment(int postId, String creator, String content) {
+        this(0, postId, creator, content, false, null);
+    }
 }

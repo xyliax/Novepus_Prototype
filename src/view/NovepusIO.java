@@ -1,5 +1,6 @@
 package view;
 
+import controller.DBController;
 import model.Comment;
 import model.Message;
 import model.Post;
@@ -72,6 +73,15 @@ public final class NovepusIO {
         System.out.println("Showing Content\n");
         System.out.println(post.content());
         System.out.println("-----------------------------------------------Finish");
+        ArrayList<Comment> commentList = new ArrayList<>();
+        for (int id : DBController.getPostCommentId(post.postId())) {
+            Comment comment = DBController.retrieveCommentById(id);
+            if (!comment.deleted())
+                commentList.add(comment);
+        }
+        System.out.printf("Displaying Comments, %d in total%n", commentList.size());
+        printCommentList(commentList);
+        System.out.println("All Comments have been displayed!");
     }
 
     public void printComment(Comment comment) {
@@ -85,8 +95,9 @@ public final class NovepusIO {
     public void printUserList(ArrayList<User> userList) {
         System.out.println("________NAME_____________________EMAIL______________________");
         for (User user : userList) {
-            System.out.printf("|    %-15s    ||%-28s|%n",
-                    user.userName(), user.userEmail().isEmpty() ? "NOT SET" : user.userEmail());
+            System.out.printf("| %-15s%-8s||%-28s|%n",
+                    user.userName(), user.online() ? "ONLINE" : "OFFLINE",
+                    user.userEmail().isEmpty() ? "NOT SET" : user.userEmail());
         }
         System.out.println("------------------------------------------------------------");
     }
@@ -94,10 +105,29 @@ public final class NovepusIO {
     public void printPostList(ArrayList<Post> postList) {
         System.out.println("____________________________________________________________________________________________________");
         for (Post post : postList) {
-            System.out.printf("pid=%-6s Title:%-20s Author:%-15s Size:%-5s  Date:%s%n",
-                    post.postId(), post.postTitle(), post.postAuthor(), post.content().length(), post.postDate());
+            System.out.printf("pid=%-6s Title:%-20s Author:%-15s Size:%-5s  Date:%s%n\t\tLikes:%-6s Comments:%-6s",
+                    post.postId(), post.postTitle(), post.postAuthor(), post.content().length(), post.postDate(),
+                    DBController.getPostLikes(post.postId()), DBController.getPostCommentId(post.postId()).size());
         }
         System.out.println("----------------------------------------------------------------------------------------------------");
+    }
+
+    public void printCommentList(ArrayList<Comment> commentList) {
+        System.out.println("_____________________________________________________________________________________");
+        for (Comment comment : commentList) {
+            System.out.printf("cid=%-6s From %-15s At %s%n\tContent: %s",
+                    comment.commentId(), comment.creator(), comment.createDate(), comment.content());
+        }
+        System.out.println("-------------------------------------------------------------------------------------");
+    }
+
+    public void printMessageList(ArrayList<Message> messageList) {
+        System.out.println("_____________________________________________________________________________________");
+        for (Message message : messageList) {
+            System.out.printf("mid=%-6s From %-15s To %-15s At %s%n\tContent: %s",
+                    message.messageId(), message.sender(), message.receiver(), message.sentDate(), message.content());
+        }
+        System.out.println("-------------------------------------------------------------------------------------");
     }
 
     public void showMainMenu() {
@@ -122,8 +152,9 @@ public final class NovepusIO {
                                 |    's'     to     Follows   |
                                 |    'm'     to     MailBox   |
                                 |    'q'     to     Log Out   |
+                                Online User Number: %d
                         -----------------------------------------------%n""",
-                username);
+                username, DBController.getOnlineUserNum());
     }
 
     public void showPostMenu() {
@@ -148,6 +179,17 @@ public final class NovepusIO {
                                 |    'd'    to     Unfollow   |
                                 |    'p'    to    Send Message|
                                 |    'q'    to      Go Back   |
+                        -----------------------------------------------%n""",
+                username);
+    }
+
+    public void showMailBoxMenu() {
+        System.out.printf("""
+                        _______________________________________________
+                                         Mail Box  [%s]
+                                |    'p'    to    New Message |
+                                |    'd'    to      Delete    |
+                                |    'q'    to     Go Back    |
                         -----------------------------------------------%n""",
                 username);
     }

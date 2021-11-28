@@ -1,7 +1,9 @@
 package model;
 
-import java.util.Date;
-
 public final record Message(int messageId, String sender, String receiver, String content,
-                            boolean visible, String sentDate) {
+                            boolean deleted, String sentDate) {
+
+    public Message(String sender, String receiver, String content) {
+        this(0, sender, receiver, content, false, null);
+    }
 }

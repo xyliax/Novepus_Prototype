@@ -317,13 +317,13 @@ public class DBController {
         return postList;
     }
 
-    public static void userLikePost(int userName,int postId){}
+    public static void userLikePost(String userName,int postId){}
 
     public static int getPostLikes(int postId){
         return 0;
     }
 
-    public static ArrayList<Integer> getPostCommentId(){
+    public static ArrayList<Integer> getPostCommentId(int postId){
         return null;
     }
 
