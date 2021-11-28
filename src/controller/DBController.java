@@ -36,9 +36,15 @@ public class DBController {
         exc(s);
     }
 
-    public static void setUserPassword(User user, String newPassword) throws SQLException {
-        String s = String.format("update \"user\" set \"password\" = '%s' where \"username\"= '%s'", newPassword, user.userName());
+    public static void setUserPassword(String userName, String newPassword) throws SQLException {
+        String s = String.format("update \"user\" set \"password\" = '%s' where \"username\"= '%s'", newPassword, userName);
         exc(s);
+    }
+
+    public static void setUserEmail (String userName, String email) throws SQLException{
+        String s = String.format("update \"user\" set \"email\" = '%s' where \"username\"= '%s'", email, userName);
+        exc(s);
+
     }
 
     public static User retrieveUserByName(String userName) throws SQLException {
@@ -370,14 +376,6 @@ public class DBController {
         return null;
     }
 
-
-
-    // -------------Need to achieve---------------
-
-    public static void setUserEmail(String userName, String email){
-
-    }
-
     public static ArrayList<Integer> getUserInbox(String userName) {
         ArrayList<Integer> MegList = new ArrayList<>();
         try {
@@ -407,9 +405,12 @@ public class DBController {
     }
 
     // about message
+
     public static void createMessage(Message message){
 
     }
+
+    // -------------Need to achieve---------------
 
     public static boolean messageExist(int message_id){
         return false;
