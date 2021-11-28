@@ -7,19 +7,35 @@ import model.User;
 import oracle.jdbc.driver.OracleConnection;
 import oracle.jdbc.driver.OracleDriver;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DBController {
     static OracleConnection conn;
+    static FileOutputStream stream;
+
+    static {
+        try {
+            stream = new FileOutputStream("SQL_log.txt");
+            stream.write(("Record All SQL statements at " + new Date() + "\n").getBytes());
+        } catch (Exception ignored) {
+        }
+    }
 
     private static ResultSet execute(String s)
             throws SQLException {
         Statement stmt = conn.createStatement();
+        try {
+            stream.write((s + "\n").getBytes());
+        } catch (IOException ignored) {
+        }
         return stmt.executeQuery(s);
     }
 
@@ -394,7 +410,7 @@ public class DBController {
         int result;
         try {
             String s = String.format(
-                    "SELECT * FROM \"interest\" WHERE \"lable_name\"='%s'",
+                    "SELECT * FROM \"interest\" WHERE \"label_name\"='%s'",
                     labelName);
             ResultSet r = execute(s);
             if (r.next()) {
