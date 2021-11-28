@@ -498,7 +498,7 @@ public class DBController {
 
     // -------------Need to achieve---------------
 
-    public ArrayList<Integer> getAllUserId() throws SQLException{
+    public static ArrayList<Integer> getAllUserId() throws SQLException{
         ArrayList<Integer> userIdList = new ArrayList<>();
         String s= "SELECT \"id\" FROM \"user\"";
         ResultSet r = exc(s);
